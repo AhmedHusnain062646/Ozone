@@ -1,0 +1,6 @@
+{
+  "name": "Ozone Multi-Vendor Marketplace",
+  "description": "Editorial boutique luxury multi-vendor marketplace featuring concurrency-safe inventory reservation, multi-seller split orders, lifecycle state machine, and administrative analytics.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
