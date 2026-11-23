@@ -48,3 +48,14 @@ Commands and results:
 - `npm run lint` exit 0; `npm run build` exit 0; `npm run test:e2e` 13 passed (catalog e2e: 8 new, covering seeded list of 6 with the pending atelier hidden, server-side search/category/sort in URL, empty state + Clear filters, product modal deep link and Esc keeping filters, unknown slug error state, wishlist redirect/save/list/remove, wishlist route guard, review by the seeded buyer with a delivered purchase).
 Not covered: pagination UI at >12 products (server pagination is unit-tested; seed has 6); axe/responsive (M10).
 Next: M5 cart and reservations.
+
+## Iteration 2, M5 cart and reservations (DONE)
+Changed: `server/repositories/{inventory,cart}.ts`, `server/services/{cart,reservations}.ts`, `server/routes/cart.ts`, lazy release wired into catalog reads, sweeper started in `server/index.ts`; frontend cart hooks, `CartDrawer` (routed `/cart`, atelier-grouped lines, steppers, hold countdown), header `CartButton`, reserve action in the product panel.
+Commands and results:
+- Tests first: `cart.test.ts` failed with "Cannot find module '../services/reservations.ts'" before implementation; after: 16 passed, full `npx vitest run` 9 files / 80 tests passed.
+- Acceptance test inside `cart.test.ts`: 20 parallel reservations of a stock-1 variant from 20 signed-in users -> exactly 1 x 201 and 19 x 409 INVENTORY_CONFLICT; afterwards stock=1, reserved=1, one cart line. Also: 10 parallel adds by one user with stock 3 -> 3 successes, 7 conflicts, reserved=3; mixed add/delete/get storm keeps `reserved` = sum(cart lines) and within [0, stock].
+- Mutation check: changing the reserve guard to compare against 0 instead of `qty` made 4 tests fail (conflict, accumulate/patch, 20-parallel, same-user parallel); restored, all pass.
+- Expiry: lazy release via GET /cart, via catalog detail (availability restored), an expired hold no longer blocks another buyer, 8 concurrent `releaseExpiredHolds` release exactly 3 lines in total, and the sweeper clears an expired hold on its own.
+- `npm run lint` exit 0 (after typing the sweeper default param), `npm run build` exit 0, `npm run test:e2e` 17 passed (4 new: sign-in redirect returning to the product; reserve with ~10:00 countdown, server-priced $1,240.00, stepper and removal; cart survives a brand-new browser context; two real browser contexts racing for the last unit, loser sees "Just taken" and then "Sold out").
+Not covered: hold-expiry countdown reaching 0 in the browser (server side is tested; waiting 10 minutes in e2e is impractical).
+Next: M6 checkout, idempotency, split orders, ledger.

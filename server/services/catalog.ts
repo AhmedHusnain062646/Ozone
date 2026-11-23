@@ -2,6 +2,7 @@
 // ABOUTME: Review rule: only after a DELIVERED purchase of that product, once per buyer; identity from the session.
 import { HttpError, conflict, forbidden, notFound } from '../http/errors.ts';
 import * as repo from '../repositories/catalog.ts';
+import { releaseExpiredHolds } from './reservations.ts';
 import type { ListFilter } from '../repositories/catalog.ts';
 
 type Card = Awaited<ReturnType<typeof repo.listProducts>>['items'][number];
@@ -27,6 +28,7 @@ function toCard(c: Card) {
 }
 
 export async function listCatalog(filter: ListFilter) {
+  await releaseExpiredHolds(); // availability must not count expired holds
   const { items, total } = await repo.listProducts(filter);
   return { items: items.map(toCard), total, page: filter.page, pageSize: filter.pageSize, pageCount: Math.max(1, Math.ceil(total / filter.pageSize)) };
 }
@@ -34,6 +36,7 @@ export async function listCatalog(filter: ListFilter) {
 export const listCategories = () => repo.listCategories();
 
 export async function productDetail(slug: string, viewerId: string | undefined) {
+  await releaseExpiredHolds();
   const p = await repo.findVisibleProductBySlug(slug);
   if (!p) throw notFound('Product not found');
   const [images, variants, reviews] = await Promise.all([repo.listImages(p.id), repo.listVariants(p.id), repo.listReviews(p.id)]);
@@ -60,6 +63,7 @@ export async function productDetail(slug: string, viewerId: string | undefined) 
 }
 
 export async function listWishlist(userId: string, page = 1, pageSize = 48) {
+  await releaseExpiredHolds();
   const { items } = await repo.listProducts({ sort: 'newest', page, pageSize, wishlistUserId: userId });
   return items.map(toCard);
 }

@@ -1,7 +1,8 @@
 // ABOUTME: Root layout: skip link, header, routed page outlet, footer. Wraps every route.
-// ABOUTME: The cart button is injected into the header by the cart feature (M5) via the cartSlot prop.
+// ABOUTME: The cart button is injected into the header through the cartSlot prop.
 import { Outlet } from 'react-router';
 import { Footer } from './Footer.tsx';
+import { CartButton } from './CartButton.tsx';
 import { Header } from './Header.tsx';
 
 export function AppLayout() {
@@ -10,7 +11,7 @@ export function AppLayout() {
       <a href="#main" className="sr-only z-[70] bg-teal px-4 py-3 text-milk focus:not-sr-only focus:fixed focus:left-2 focus:top-2">
         Skip to content
       </a>
-      <Header />
+      <Header cartSlot={<CartButton />} />
       <main id="main" className="flex-1">
         <Outlet />
       </main>

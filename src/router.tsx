@@ -2,6 +2,7 @@
 // ABOUTME: Role-gated areas wrap their element in <RequireRole>; later milestones add their routes here.
 import { createBrowserRouter } from 'react-router';
 import { AuthenticationModal } from './components/auth/AuthenticationModal.tsx';
+import { CartDrawer } from './components/buyer/CartDrawer.tsx';
 import { ProductDetailModal } from './components/buyer/ProductDetailModal.tsx';
 import { WishlistView } from './components/buyer/WishlistView.tsx';
 import { RequireRole } from './lib/auth.tsx';
@@ -19,6 +20,7 @@ export const router = createBrowserRouter([
         Component: Storefront, children: [
           { path: 'sign-in', Component: AuthenticationModal },
           { path: 'products/:slug', Component: ProductDetailModal },
+          { path: 'cart', element: <RequireRole><CartDrawer /></RequireRole> },
         ],
       },
       { path: 'wishlist', element: <RequireRole><WishlistView /></RequireRole> },

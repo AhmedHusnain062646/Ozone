@@ -1,6 +1,6 @@
 // ABOUTME: The single typed API client. Every network call in the SPA goes through `request`.
 // ABOUTME: Server errors arrive as { error: { code, message, details } } and surface as ApiError.
-import type { CatalogQuery, CategoryData, Paginated, ProductCardData, ProductDetailData, SessionUser } from './types.ts';
+import type { CartData, CatalogQuery, CategoryData, Paginated, ProductCardData, ProductDetailData, SessionUser } from './types.ts';
 
 export class ApiError extends Error {
   constructor(
@@ -73,6 +73,14 @@ export const api = {
     list: () => request<ProductCardData[]>('GET', '/wishlist'),
     add: (productId: string) => request<void>('PUT', `/wishlist/${productId}`, {}),
     remove: (productId: string) => request<void>('DELETE', `/wishlist/${productId}`),
+  },
+
+  cart: {
+    get: () => request<CartData>('GET', '/cart'),
+    add: (variantId: string, quantity: number) => request<CartData>('POST', '/cart/items', { variantId, quantity }),
+    setQuantity: (variantId: string, quantity: number) => request<CartData>('PATCH', `/cart/items/${variantId}`, { quantity }),
+    remove: (variantId: string) => request<void>('DELETE', `/cart/items/${variantId}`),
+    clear: () => request<void>('DELETE', '/cart'),
   },
 
   reviews: {

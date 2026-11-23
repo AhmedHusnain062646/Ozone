@@ -83,3 +83,26 @@ export interface CatalogQuery {
   page?: number;
   pageSize?: number;
 }
+
+export interface CartLine {
+  variantId: string;
+  productId: string;
+  slug: string;
+  title: string;
+  variantName: string;
+  sku: string;
+  image: string | null;
+  seller: { id: string; name: string };
+  unitPriceCents: number;
+  quantity: number;
+  lineTotalCents: number;
+  expiresAt: string;
+  purchasable: boolean;
+}
+
+export interface CartData {
+  lines: CartLine[];
+  subtotalCents: number;
+  expiresAt: string | null;
+  serverTime: string;
+}

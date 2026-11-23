@@ -19,4 +19,5 @@ export const config = {
   // Number of reverse-proxy hops to trust for X-Forwarded-* (0 = none). Set TRUST_PROXY=1 behind one proxy.
   trustProxy: Number(process.env.TRUST_PROXY ?? 0),
   reservationTtlMs: 10 * 60 * 1000,
+  sweepIntervalMs: 30_000,
 } as const;
