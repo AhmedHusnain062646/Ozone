@@ -17,7 +17,7 @@
   --color-graphite: #101415;
   --color-graphite-raised: #181d1f;
   --color-graphite-line: #2a3235;
-  --color-success: #2f7d5b;
+  --color-success: #2a7353;
   --color-warning: #c58a2b;
   --color-danger: #b5483c;
   --color-danger-on-dark: #ff9d8f;
@@ -96,3 +96,17 @@
 ::-webkit-scrollbar-track { background: var(--color-bone); }
 ::-webkit-scrollbar-thumb { background: var(--color-linen-strong); border-radius: 2px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--color-teal); }
+
+/* Back-of-house (admin) surface: re-tone the light-theme text utilities that would otherwise fail contrast on graphite.
+   Scoped to non-input elements because form controls keep their own light fill. */
+.on-graphite .text-sage { color: color-mix(in srgb, var(--color-bone) 72%, transparent); }
+.on-graphite .text-success { color: #6fd6a8; }
+.on-graphite .text-info { color: #8fc0e6; }
+.on-graphite .text-danger { color: var(--color-danger-on-dark); }
+.on-graphite .text-\[\#7a5410\] { color: #e8b863; }
+.on-graphite .text-gold-ink { color: #e3c387; }
+.on-graphite button.text-ink { color: var(--color-bone); }
+.on-graphite button.border-linen-strong { border-color: color-mix(in srgb, var(--color-bone) 45%, transparent); }
+.on-graphite button.text-ink:hover:not(:disabled) { background-color: color-mix(in srgb, var(--color-bone) 14%, transparent); }
+/* Form controls (Input/Select) sit on a light fill even inside graphite, so their own error text must stay readable on it. */
+.on-graphite input + p.text-danger, .on-graphite select + p.text-danger { color: var(--color-danger); }

@@ -1,4 +1,58 @@
-import { AtelierSeller, Product, ParentOrder, LedgerEntry, CategoryDefinition } from '../types/marketplace';
+// ABOUTME: Seed catalogue (ateliers and products) used by db/seed.ts; not served to the browser.
+// ABOUTME: Ids here are seed-time keys only; the database assigns real uuids.
+
+export interface AtelierSeller {
+  id: string;
+  name: string;
+  tagline: string;
+  location: string;
+  commissionRate: number; // e.g. 0.12 (12%)
+  status: 'active' | 'pending_approval' | 'suspended';
+  rating: number;
+  totalSalesCount: number;
+  joinedDate: string;
+  bannerDescription: string;
+  verifiedAtelier: boolean;
+}
+
+export interface ProductVariant {
+  id: string;
+  name: string;
+  sku: string;
+  priceDelta: number;
+  stock: number;
+  reservedStock: number; // temporarily reserved under 10-min hold
+}
+
+export interface ProductReview {
+  id: string;
+  buyerName: string;
+  rating: number;
+  date: string;
+  title: string;
+  comment: string;
+  verifiedPurchase: boolean;
+}
+
+export interface Product {
+  id: string;
+  title: string;
+  sellerId: string;
+  category: 'Timepieces' | 'Interiors' | 'Fragrance' | 'Fashion' | 'Art & Objects' | 'Audio';
+  basePrice: number;
+  shortDescription: string;
+  description: string;
+  material: string;
+  origin: string;
+  images: string[];
+  variants: ProductVariant[];
+  rating: number;
+  reviewCount: number;
+  reviews: ProductReview[];
+  limitedEdition?: boolean;
+  lowStockThreshold: number;
+  isPublished: boolean;
+}
 
 export const INITIAL_SELLERS: AtelierSeller[] = [
   {
@@ -79,14 +133,6 @@ export const INITIAL_SELLERS: AtelierSeller[] = [
     bannerDescription: 'Multi-layered Damascus kitchen knives hand-forged in historic Seki workshops, currently awaiting platform accreditation.',
     verifiedAtelier: false,
   },
-];
-
-export const INITIAL_CATEGORIES: CategoryDefinition[] = [
-  { id: 'all', name: 'All Works', description: 'Curated archive across all sovereign guilds', itemCount: 37 },
-  { id: 'Ceramics', name: 'Ceramics & Stone', description: 'Tuscan travertine, basalt stoneware, and mineral vessels', itemCount: 18 },
-  { id: 'Fashion', name: 'Handspun Flax & Silk', description: 'Wild-spun linen coats, raw ecru textiles, and sanctuary wear', itemCount: 7 },
-  { id: 'Bronze', name: 'Cast Bronze', description: 'Lost-wax castings, sconces, and architectural hardware', itemCount: 12 },
-  { id: 'Timepieces', name: 'Horology', description: 'Titanium chronometers and architectural movements', itemCount: 4 },
 ];
 
 export const INITIAL_PRODUCTS: Product[] = [
@@ -303,205 +349,5 @@ export const INITIAL_PRODUCTS: Product[] = [
         verifiedPurchase: true,
       },
     ],
-  },
-];
-
-export const INITIAL_ORDERS: ParentOrder[] = [
-  {
-    id: 'OZ-2025-98421',
-    buyerId: 'collector-sterling',
-    buyerName: 'Julian Sterling',
-    buyerEmail: 'sterling@residence.com',
-    createdAt: '2025-10-24T09:42:00Z',
-    totalAmount: 2405, // 1450 + 955
-    paymentMethod: 'sandbox_card',
-    paymentStatus: 'PAID',
-    idempotencyKey: 'idemp-98421-sov-escrow',
-    shippingAddress: {
-      fullName: 'Julian Sterling',
-      street: '742 Evergreen Terrace, Residence 4B',
-      city: 'San Francisco',
-      state: 'CA',
-      postalCode: '94102',
-      country: 'United States',
-    },
-    subOrders: [
-      {
-        id: 'SUB-AV-9021',
-        sellerId: 'seller-vane',
-        sellerName: 'Atelier Vane',
-        items: [
-          {
-            productId: 'prod-vane-01',
-            productTitle: 'Monolithic Travertine Vessel N°03',
-            variantId: 'var-v01-raw',
-            variantName: 'Raw Roman Travertine / Studio 320mm',
-            sku: 'OZ-TRAV-RAW-S',
-            unitPrice: 1450,
-            quantity: 1,
-            subtotal: 1450,
-          },
-        ],
-        subtotal: 1450,
-        shipping: 0,
-        tax: 0,
-        total: 1450,
-        commissionRate: 0.085,
-        commissionAmount: 123.25,
-        sellerPayoutAmount: 1326.75,
-        status: 'SHIPPED',
-        trackingNumber: 'OZ-KY-8820 (Kyoto Customs Cleared)',
-        statusHistory: [
-          { status: 'PLACED', timestamp: '2025-10-24T09:42:00Z', actor: 'Collector (Julian Sterling)', actorRole: 'buyer', note: 'Master acquisition authenticated.' },
-          { status: 'PAID', timestamp: '2025-10-24T09:43:00Z', actor: 'Ozone Treasury Protocol #TR-9941', actorRole: 'buyer', note: 'Escrow funds locked in smart vault.' },
-          { status: 'PACKED', timestamp: '2025-10-25T14:10:00Z', actor: 'Master K. Vane (Atelier Vane)', actorRole: 'seller', note: 'Wax seal and obsidian hallmarking affixed.' },
-          { status: 'SHIPPED', timestamp: '2025-10-26T08:30:00Z', actor: 'Kyoto Airfreight Depot', actorRole: 'seller', note: 'Crated & transferred to Sovereign Flight #OZ-KY-8820.' },
-        ],
-      },
-      {
-        id: 'SUB-MS-4819',
-        sellerId: 'seller-silt',
-        sellerName: 'Maison Silt',
-        items: [
-          {
-            productId: 'prod-silt-01',
-            productTitle: 'Unbleached Wild-Spun Flax Kimono',
-            variantId: 'var-s01-s2',
-            variantName: 'Size II (Unisex Tailored) / Archival Ecru',
-            sku: 'MS-FLX-EC-02',
-            unitPrice: 890,
-            quantity: 1,
-            subtotal: 890,
-          },
-        ],
-        subtotal: 890,
-        shipping: 65,
-        tax: 0,
-        total: 955,
-        commissionRate: 0.085,
-        commissionAmount: 81.18,
-        sellerPayoutAmount: 873.82,
-        status: 'DELIVERED',
-        trackingNumber: 'MS-FEDEX-NORMANDY-4819',
-        statusHistory: [
-          { status: 'PLACED', timestamp: '2025-10-24T09:42:00Z', actor: 'Collector (Julian Sterling)', actorRole: 'buyer' },
-          { status: 'PAID', timestamp: '2025-10-24T09:43:00Z', actor: 'Ozone Treasury Escrow', actorRole: 'buyer' },
-          { status: 'PACKED', timestamp: '2025-10-25T11:00:00Z', actor: 'Maison Silt Archive Master', actorRole: 'seller' },
-          { status: 'SHIPPED', timestamp: '2025-10-25T16:40:00Z', actor: 'Climate-Buffered Loom Freight', actorRole: 'seller' },
-          { status: 'DELIVERED', timestamp: '2025-10-27T11:15:00Z', actor: 'Vault Concierge Courier', actorRole: 'admin', note: 'Signed & sealed by Vault Concierge.' },
-        ],
-      },
-    ],
-  },
-  {
-    id: 'OZ-2025-9112',
-    buyerId: 'collector-dupont',
-    buyerName: 'M. Dupont',
-    buyerEmail: 'dupont@paris.fr',
-    createdAt: '2025-10-18T14:20:00Z',
-    totalAmount: 955,
-    paymentMethod: 'sandbox_card',
-    paymentStatus: 'PAID',
-    idempotencyKey: 'idemp-9112-dupont',
-    shippingAddress: {
-      fullName: 'M. Dupont',
-      street: '14 Rue de Bellechasse',
-      city: 'Paris',
-      state: 'IDF',
-      postalCode: '75007',
-      country: 'France',
-    },
-    subOrders: [
-      {
-        id: 'DIS-9921',
-        sellerId: 'seller-silt',
-        sellerName: 'Maison Silt',
-        items: [
-          {
-            productId: 'prod-silt-01',
-            productTitle: 'Maison Silt Archive Kimono',
-            variantId: 'var-s01-s2',
-            variantName: 'Size II (Unisex Tailored) / Archival Ecru',
-            sku: 'MS-FLX-EC-02',
-            unitPrice: 890,
-            quantity: 1,
-            subtotal: 890,
-          },
-        ],
-        subtotal: 890,
-        shipping: 65,
-        tax: 0,
-        total: 955,
-        commissionRate: 0.085,
-        commissionAmount: 81.18,
-        sellerPayoutAmount: 873.82,
-        status: 'RETURN_REQUESTED',
-        trackingNumber: 'FR-RET-9921-SILT',
-        returnReason: 'Sizing Variance (+4cm Hem variance from sizing codex)',
-        statusHistory: [
-          { status: 'PLACED', timestamp: '2025-10-18T14:20:00Z', actor: 'Collector (M. Dupont)', actorRole: 'buyer' },
-          { status: 'PAID', timestamp: '2025-10-18T14:21:00Z', actor: 'System', actorRole: 'buyer' },
-          { status: 'PACKED', timestamp: '2025-10-19T09:00:00Z', actor: 'Maison Silt Master', actorRole: 'seller' },
-          { status: 'SHIPPED', timestamp: '2025-10-19T14:00:00Z', actor: 'Courier', actorRole: 'seller' },
-          { status: 'DELIVERED', timestamp: '2025-10-21T16:00:00Z', actor: 'Courier Carrier', actorRole: 'admin' },
-          { status: 'RETURN_REQUESTED', timestamp: '2025-10-23T11:00:00Z', actor: 'Collector (M. Dupont)', actorRole: 'buyer', note: 'Claim #DIS-9921: Sizing Variance (+4cm Hem).' },
-        ],
-      },
-    ],
-  },
-];
-
-export const INITIAL_LEDGER: LedgerEntry[] = [
-  {
-    id: 'led-vane-1',
-    timestamp: '2025-10-24T09:43:00Z',
-    orderId: 'OZ-2025-98421',
-    subOrderId: 'SUB-AV-9021',
-    sellerId: 'seller-vane',
-    sellerName: 'Atelier Vane',
-    type: 'sale_credit',
-    grossAmount: 1450,
-    commissionAmount: 123.25,
-    netSellerAmount: 1326.75,
-    status: 'pending', // in escrow
-  },
-  {
-    id: 'led-silt-1',
-    timestamp: '2025-10-24T09:43:00Z',
-    orderId: 'OZ-2025-98421',
-    subOrderId: 'SUB-MS-4819',
-    sellerId: 'seller-silt',
-    sellerName: 'Maison Silt',
-    type: 'sale_credit',
-    grossAmount: 955,
-    commissionAmount: 81.18,
-    netSellerAmount: 873.82,
-    status: 'settled',
-  },
-  {
-    id: 'led-vane-2',
-    timestamp: '2025-10-18T10:00:00Z',
-    orderId: 'OZ-2025-8910',
-    subOrderId: 'SUB-AV-8910',
-    sellerId: 'seller-vane',
-    sellerName: 'Atelier Vane',
-    type: 'sale_credit',
-    grossAmount: 2400,
-    commissionAmount: 204.00,
-    netSellerAmount: 2196.00,
-    status: 'disbursed',
-  },
-  {
-    id: 'led-pay-8812',
-    timestamp: '2025-10-25T14:22:08Z',
-    orderId: 'PAYOUT-BATCH',
-    subOrderId: 'PAY-8812',
-    sellerId: 'seller-vane',
-    sellerName: 'Atelier Vane',
-    type: 'payout_disbursement',
-    grossAmount: -14200,
-    commissionAmount: 0,
-    netSellerAmount: -14200,
-    status: 'disbursed',
   },
 ];

@@ -9,8 +9,8 @@ import { Card, QueryBoundary, Table, THead, Td, Th, Tr } from '../ui/index.ts';
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <Card graphite className="p-5">
-      <p className="label-caps text-bone/70">{label}</p>
-      <p className="font-numeric mt-2 text-[28px] leading-9">{value}</p>
+      <dt className="label-caps text-bone/70">{label}</dt>
+      <dd className="font-numeric mt-2 text-[28px] leading-9">{value}</dd>
     </Card>
   );
 }
@@ -47,7 +47,7 @@ export function AdminOverview() {
             </section>
 
             <div className="grid gap-8 lg:grid-cols-2">
-              <section aria-labelledby="top-heading">
+              <section aria-labelledby="top-heading" className="min-w-0">
                 <h2 id="top-heading" className="font-display text-2xl">Top ateliers</h2>
                 <div className="mt-3">
                   <Table graphite caption="Top ateliers by gross sales">
@@ -61,7 +61,7 @@ export function AdminOverview() {
                   </Table>
                 </div>
               </section>
-              <section aria-labelledby="status-heading">
+              <section aria-labelledby="status-heading" className="min-w-0">
                 <h2 id="status-heading" className="font-display text-2xl">Parcels by status</h2>
                 <ul className="mt-3 divide-y divide-graphite-line border border-graphite-line">
                   {(Object.entries(d.subOrdersByStatus) as [OrderStatus, number][]).map(([st, n]) => (

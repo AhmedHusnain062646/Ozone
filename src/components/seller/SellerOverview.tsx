@@ -7,9 +7,9 @@ import { Card, QueryBoundary } from '../ui/index.ts';
 function Stat({ label, value, note }: { label: string; value: string; note?: string }) {
   return (
     <Card className="p-5">
-      <p className="label-caps text-sage">{label}</p>
-      <p className="font-numeric mt-2 text-[28px] leading-9">{value}</p>
-      {note && <p className="mt-1 text-xs text-sage">{note}</p>}
+      <dt className="label-caps text-sage">{label}</dt>
+      <dd className="font-numeric mt-2 text-[28px] leading-9">{value}</dd>
+      {note && <dd className="mt-1 text-xs text-sage">{note}</dd>}
     </Card>
   );
 }

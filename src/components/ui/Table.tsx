@@ -5,7 +5,7 @@ import { cx } from '../../lib/cx.ts';
 
 export function Table({ caption, children, graphite, className }: { caption: string; children: ReactNode; graphite?: boolean; className?: string }) {
   return (
-    <div className={cx('w-full overflow-x-auto rounded-sm border', graphite ? 'on-graphite border-graphite-line' : 'border-linen bg-milk', className)}>
+    <div role="region" aria-label={caption} tabIndex={0} className={cx('relative w-full overflow-x-auto rounded-sm border', graphite ? 'on-graphite border-graphite-line' : 'border-linen bg-milk', className)}>
       <table className="w-full min-w-[36rem] border-collapse text-left text-sm">
         <caption className="sr-only">{caption}</caption>
         {children}

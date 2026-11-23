@@ -1,4 +1,4 @@
-// ABOUTME: Toast provider + useToast(). Replaces every alert(): polite live region, auto-dismiss, manual close.
+// ABOUTME: Toast provider + useToast(). Replaces browser dialogs: polite live region, auto-dismiss, manual close.
 // ABOUTME: Errors use role="alert" semantics via aria-live=assertive on that toast only.
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';

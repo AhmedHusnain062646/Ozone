@@ -4,7 +4,7 @@ import argon2 from 'argon2';
 import { sql } from 'drizzle-orm';
 import { db, closeDb, type Tx } from './client.ts';
 import * as s from './schema.ts';
-import { INITIAL_PRODUCTS, INITIAL_SELLERS } from '../../src/data/mockData.ts';
+import { INITIAL_PRODUCTS, INITIAL_SELLERS } from './seed-data.ts';
 import { splitCommission } from '../lib/money.ts';
 
 const cents = (dollars: number) => Math.round(dollars * 100);

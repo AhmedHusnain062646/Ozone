@@ -1,5 +1,5 @@
 // ABOUTME: Session state hooks: who is signed in (server truth via /auth/me) plus login/register/logout mutations.
-// ABOUTME: No identity is ever kept in localStorage; a cleared browser just means a fresh /me call.
+// ABOUTME: No identity is ever kept in browser storage; a cleared browser just means a fresh /me call.
 import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query';
 import { Navigate, useLocation } from 'react-router';
 import type { ReactNode } from 'react';

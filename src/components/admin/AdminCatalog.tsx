@@ -13,12 +13,12 @@ function DefaultFee() {
   const [draft, setDraft] = useState<string | null>(null);
   const [error, setError] = useState('');
   return (
-    <Card graphite className="p-5">
+    <Card graphite className="min-w-0 p-5">
       <h2 className="font-display text-xl">Default platform fee</h2>
       <p className="mt-1 text-sm text-bone/70">Applied to atelier applications received from now on. Existing ateliers keep their own rate.</p>
       <QueryBoundary query={settings}>
         {(s) => (
-          <form className="mt-4 flex items-end gap-3" noValidate onSubmit={(e: FormEvent) => {
+          <form className="mt-4 flex flex-wrap items-end gap-3" noValidate onSubmit={(e: FormEvent) => {
             e.preventDefault();
             const bps = percentToBps(draft ?? String(s.defaultCommissionBps / 100));
             if (bps === undefined) return setError('Enter 1 to 50');
@@ -65,7 +65,7 @@ export function AdminCatalog() {
   return (
     <div className="grid gap-8 lg:grid-cols-[1fr_1.6fr]">
       <DefaultFee />
-      <section aria-labelledby="cat-heading">
+      <section aria-labelledby="cat-heading" className="min-w-0">
         <h2 id="cat-heading" className="font-display text-2xl">Categories</h2>
         <form className="mt-4 flex items-end gap-3" noValidate onSubmit={(e: FormEvent) => {
           e.preventDefault();

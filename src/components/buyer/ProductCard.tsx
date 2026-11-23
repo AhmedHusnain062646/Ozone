@@ -36,7 +36,6 @@ export function ProductCard({ product }: { product: ProductCardData }) {
         to={{ pathname: `/products/${product.slug}`, search: location.pathname === '/' ? location.search : '' }}
         state={{ from: location.pathname === '/' ? location.search : '' }}
         className="block"
-        aria-label={`${product.title}, ${formatMoney(product.fromPriceCents)}`}
       >
         <div className="aspect-[4/5] overflow-hidden bg-linen">
           <SafeImage src={product.image ?? undefined} alt="" className="h-full w-full object-cover transition-transform duration-[400ms] group-hover:scale-[1.02]" />
