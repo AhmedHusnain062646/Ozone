@@ -1,7 +1,7 @@
 # Ozone build plan
 
 - [x] M1 server, database, schema, migrations, seed ported from mockData.ts, test harness
-- [ ] M2 auth and role checks
+- [x] M2 auth and role checks
 - [ ] M3 UI foundation: tokens, primitives, router, API client
 - [ ] M4 catalog, wishlist, reviews
 - [ ] M5 cart and reservations

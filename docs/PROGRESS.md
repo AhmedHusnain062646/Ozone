@@ -19,3 +19,14 @@ Commands run and results:
 - Booted `tsx server/index.ts`: `GET /api/health` 200 `{"status":"ok","database":"up"}`; `GET /api/nope` returns the NOT_FOUND envelope.
 Not yet verified: `npm run dev` end to end (port 3000 is held by an unrelated `gowa` process, PID 1041; not touched); README clean-clone steps (M10).
 Next: M2 auth and role checks.
+
+## Iteration 1, M2 auth and role checks (DONE)
+Changed: `server/http/{session,auth,origin,async-handler}.ts`, `server/routes/auth.ts`, `server/services/auth.ts`, `server/repositories/users.ts`, `server/lib/password.ts`, `createApp(opts)` wiring (session, origin check, auth router with rate limit), `TRUST_PROXY` config.
+Commands run and results:
+- `npx vitest run server/tests/auth.test.ts` before implementation: "Cannot find module '../http/auth.ts'" (red). After: 18 passed.
+- Mutation check: removing `session.regenerate` and the origin check made exactly the fixation test and the CSRF_ORIGIN test fail (2 failed, 16 passed); restored, all pass.
+- `npm run lint` exit 0 (after fixing an argon2 option typing error), `npx vitest run` 6 files / 46 tests passed, `npm run build` exit 0.
+- Live smoke on the dev DB (`tsx server/index.ts`, curl): seeded `vane@ozone.test` login 200 with `HttpOnly; SameSite=Lax` cookie (no Secure over http, as intended); `/api/auth/me` returns role seller + sellerId; forged `Origin: https://evil.example` POST returns 403 CSRF_ORIGIN; wrong password returns 401 INVALID_CREDENTIALS.
+Covered by tests: register/login/logout/me, duplicate email 409 (case-insensitive), argon2id storage, strict body rejects forged role, session rotation, logout destroys session, deleted user with live cookie is signed out, requireRole 401/403/200, Secure cookie under HTTPS proxy header, 429 envelope after the limit.
+Not covered: rate limiter shared state across processes; seller "apply" flow (M8); Secure cookie in a real production deploy (only simulated via X-Forwarded-Proto).
+Next: M3 UI foundation (tokens, primitives, router, API client).

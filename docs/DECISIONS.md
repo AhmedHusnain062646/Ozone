@@ -11,3 +11,9 @@
 - Seed refuses any database whose name does not end in `_dev` or `_test`; re-seeding needs `--reset`. Test global setup applies the same `_test` guard before migrating.
 - Environment note: port 3000 is occupied on this machine by an unrelated `gowa` process; Vite falls back to the next free port. Playwright (M10) will start its own servers on dedicated ports rather than assume 3000.
 - `drizzle-kit generate` produced 0000_init; 0001_hardening is a hand-written custom migration (trigger + session table) because the schema DSL cannot express either.
+- Auth: sessions hold only `userId`; role and seller id are re-read from the DB on every request (`attachAuth`), so a role change or a deleted user takes effect immediately. Cost: one indexed query per request.
+- Public `/api/auth/register` can only create buyers; body schemas are `strictObject`, so a forged `role`/`sellerId` is a 400 rather than silently dropped. Seller creation goes through the "apply" flow (M8) and admin approval.
+- Login and register both call `session.regenerate` (new sid, old session destroyed). Wrong password and unknown email return the identical 401, and unknown email burns an argon2 verify to equalise timing.
+- Origin check: mutating `/api` requests with an `Origin` header must match the request `Host`; requests with no `Origin` (curl, supertest, server-to-server) pass, since cookie auth plus SameSite=Lax already covers legacy browsers. Revisit if a separate web origin is ever introduced.
+- Rate limiter uses express-rate-limit's in-memory store: correct for one process, not shared across replicas. `trust proxy` defaults to 0 (env `TRUST_PROXY`), because a fixed hop count lets a direct client spoof X-Forwarded-For and dodge the limiter. Set `TRUST_PROXY=1` behind one reverse proxy; required for Secure cookies to be issued there.
+- argon2id params: m=19456 KiB, t=2, p=1 (OWASP minimum); reduced to m=1024 only when NODE_ENV=test.

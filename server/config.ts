@@ -16,5 +16,7 @@ export const config = {
   port: Number(process.env.PORT ?? 4000),
   databaseUrl: isTest ? required('TEST_DATABASE_URL') : required('DATABASE_URL'),
   sessionSecret: required('SESSION_SECRET'),
+  // Number of reverse-proxy hops to trust for X-Forwarded-* (0 = none). Set TRUST_PROXY=1 behind one proxy.
+  trustProxy: Number(process.env.TRUST_PROXY ?? 0),
   reservationTtlMs: 10 * 60 * 1000,
 } as const;

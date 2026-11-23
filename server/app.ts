@@ -5,12 +5,22 @@ import helmet from 'helmet';
 import path from 'node:path';
 import { config } from './config.ts';
 import { errorHandler, notFoundHandler } from './http/errors.ts';
+import { attachAuth } from './http/auth.ts';
+import { originCheck } from './http/origin.ts';
+import { createSessionMiddleware } from './http/session.ts';
+import { authRouter } from './routes/auth.ts';
 import { healthRouter } from './routes/health.ts';
 
-export function createApp(): Express {
+export interface AppOptions {
+  secureCookies?: boolean;
+  trustProxy?: number | boolean;
+  authRateLimit?: { limit: number; windowMs: number };
+}
+
+export function createApp(opts: AppOptions = {}): Express {
   const app = express();
   app.disable('x-powered-by');
-  app.set('trust proxy', 1);
+  app.set('trust proxy', opts.trustProxy ?? config.trustProxy);
   // Product images may be remote https URLs, so img-src allows https: (default is 'self' data: only).
   app.use(
     helmet({
@@ -19,7 +29,15 @@ export function createApp(): Express {
   );
   app.use(express.json({ limit: '100kb' }));
 
+  app.use('/api', originCheck);
+  app.use(createSessionMiddleware({ secureCookies: opts.secureCookies }));
+  app.use(attachAuth);
+
   app.use('/api/health', healthRouter);
+  app.use(
+    '/api/auth',
+    authRouter(opts.authRateLimit ?? { limit: config.isTest ? 10_000 : 20, windowMs: 15 * 60 * 1000 }),
+  );
   app.use('/api', notFoundHandler);
 
   if (config.isProduction) {
