@@ -30,3 +30,12 @@ Commands run and results:
 Covered by tests: register/login/logout/me, duplicate email 409 (case-insensitive), argon2id storage, strict body rejects forged role, session rotation, logout destroys session, deleted user with live cookie is signed out, requireRole 401/403/200, Secure cookie under HTTPS proxy header, 429 envelope after the limit.
 Not covered: rate limiter shared state across processes; seller "apply" flow (M8); Secure cookie in a real production deploy (only simulated via X-Forwarded-Proto).
 Next: M3 UI foundation (tokens, primitives, router, API client).
+- Correction (iteration 2): the M1 tick in iteration 1 also ticked M10 by regex accident; M10 is unticked and not started.
+
+## Iteration 2, M3 UI foundation (DONE)
+Changed: `@theme` tokens in `src/index.css`; typed API client `src/lib/api.ts` (+ `types`, `format`, `cx`, `auth` hooks); 12 primitives in `src/components/ui/` (Button, Input, Select, Badge, Card, Modal, Drawer, Table, Tabs, Toast, Skeleton, EmptyState/ErrorState, plus SafeImage, QueryBoundary, useFocusTrap); router + app root; Header, Footer, AppLayout, status pages, routed `AuthenticationModal` (sign-in/register only; fake biometric and prefilled identities removed); Storefront reduced to a hero (module-imported image) until M4; Playwright config + `e2e/foundation.spec.ts`; Vite proxy target via `API_PROXY_TARGET`.
+Commands and results:
+- `npm run lint` exit 0; `npx vitest run` 46 passed; `npm run build` exit 0 (hero emitted as hashed asset `ozone_hero_luxury_living_*.jpg`).
+- `npm run test:e2e`: first run 4 failed (2 were my selector hitting the footer's second "Sign in" link; 2 were a real bug: `qc.clear()` orphaned the header's `me` observer so the UI never showed the signed-in state). After the fix: 5 passed (hero loads with naturalWidth>0; modal focus trap over 12 Tab presses + Esc closes; wrong password shows inline error then seeded buyer signs in, survives reload, signs out; register signs in as buyer; unknown route shows not-found).
+Not yet verified: contrast/axe and responsive checks (M10); screens other than auth are still prototype files orphaned from the router.
+Next: M4 catalog, wishlist, reviews.
