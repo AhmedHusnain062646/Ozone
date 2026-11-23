@@ -6,6 +6,7 @@ import { CheckoutModal } from './components/buyer/CheckoutModal.tsx';
 import { OrderDetailView, OrderTrackingView } from './components/buyer/OrderTrackingView.tsx';
 import { CartDrawer } from './components/buyer/CartDrawer.tsx';
 import { ProductDetailModal } from './components/buyer/ProductDetailModal.tsx';
+import { AdminDashboard } from './components/admin/AdminDashboard.tsx';
 import { SellerDashboard } from './components/seller/SellerDashboard.tsx';
 import { WishlistView } from './components/buyer/WishlistView.tsx';
 import { RequireRole } from './lib/auth.tsx';
@@ -29,6 +30,7 @@ export const router = createBrowserRouter([
       },
       { path: 'orders', element: <RequireRole><OrderTrackingView /></RequireRole> },
       { path: 'orders/:code', element: <RequireRole><OrderDetailView /></RequireRole> },
+      { path: 'admin', element: <RequireRole roles={['admin']}><AdminDashboard /></RequireRole> },
       { path: 'seller', element: <RequireRole roles={['seller']}><SellerDashboard /></RequireRole> },
       { path: 'wishlist', element: <RequireRole><WishlistView /></RequireRole> },
       { path: 'forbidden', Component: Forbidden },

@@ -208,3 +208,25 @@ export interface SellerSummary {
   grossCents: number; netCents: number; orderCount: number; toFulfilCount: number; balance: Balance;
   lowStock: { variantId: string; productTitle: string; variantName: string; stock: number; reserved: number }[];
 }
+
+export interface AdminAnalytics {
+  grossCents: number; commissionCents: number; netToSellersCents: number; orderCount: number;
+  subOrdersByStatus: Partial<Record<OrderStatus, number>>;
+  sellersByStatus: Partial<Record<SellerProfile['status'], number>>;
+  topSellers: { sellerId: string; name: string; grossCents: number; commissionCents: number }[];
+  daily: { date: string; grossCents: number }[];
+}
+export interface AdminSeller {
+  id: string; name: string; slug: string; location: string; status: SellerProfile['status']; verified: boolean;
+  commissionBps: number; email: string; productCount: number; joinedAt: string;
+}
+export interface AdminCategory { id: string; slug: string; name: string; description: string; productCount: number }
+export interface ReturnRow {
+  id: string; code: string; orderCode: string; seller: string; buyer: { name: string; email: string }; returnReason: string | null;
+  subtotalCents: number; commissionCents: number; netCents: number; items: { productTitle: string; variantName: string; quantity: number }[];
+}
+export interface LabVariant { id: string; label: string; stock: number; reserved: number }
+export interface LabResult {
+  variantId: string; attempts: number; availableBefore: number; succeeded: number; conflicts: number; oversold: boolean;
+  reservedAtPeak: number; released: number; totalMs: number; timingsMs: number[];
+}

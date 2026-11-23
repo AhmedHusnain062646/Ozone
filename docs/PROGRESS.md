@@ -90,3 +90,14 @@ Commands and results:
 - `npm run lint` 0, `npm run build` 0, `npm run test:e2e` 24 passed / exit 0 (2 new: applicant sees pending banner, drafts a piece, publish disabled, uploads a photo; seeded active atelier packs, ships with required tracking number, buyer sees Shipped + tracking).
 Not covered yet: approve -> publish -> storefront e2e (needs the admin console, M9); responsive/axe pass (M10).
 Next: M9 admin console + Concurrency Lab.
+
+## Iteration 2, M9 admin console and Concurrency Lab (DONE)
+Changed: `/api/admin/*` (analytics, sellers PATCH, settings/default-fee, categories CRUD, returns queue, concurrency-lab + variants list); UI `AdminDashboard` (Overview, Ateliers, Catalogue & fees, Returns) on graphite, `ConcurrencyLabModal`, route `/admin`.
+Commands and results:
+- Red first: 11 failing admin tests before implementation (404s); after: `npx vitest run` 14 files / 147 tests passed. (The lab variant-list test was written together with the endpoint and passed on first run; I did not watch it fail.)
+- Covered: per-endpoint role gating; approval enables publishing; suspension hides storefront products and blocks publishing; commission 100-5000 integer validation; commission change leaves existing sub-orders at their snapshot while a new order uses the new rate; default fee read/update and applicant default; category CRUD with duplicate and in-use refusals; analytics from the ledger with a cancelled parcel netting to zero; returns queue content and removal after decision; lab: 20 parallel on 1 free unit -> 1 granted, 19 conflicts, not oversold, released, stock/reserved restored; lab leaves buyer-held units alone; bounds 2-100; 404 for unknown variants.
+- Mutation check: releasing 0 instead of the granted units failed both lab tests; restored, 12/12.
+- `npm run lint` 0, `npm run build` 0, `npm run test:e2e` 27 passed / exit 0. New: flow 2 (buyer purchase, seller packs/ships/delivers with tracking, buyer requests return with reason, admin approves in the Returns tab, buyer sees Refunded, seller ledger shows a Refund row with a negative amount); flow 3 (apply -> pending -> publish disabled -> admin Approve in the console -> publish -> guest finds the piece in the storefront search -> unpublish cleanup); Concurrency Lab (buyer gets "Access restricted" on /admin; admin runs 25 parallel, granted + conflicts = 25, not oversold, released equals granted).
+- A first full run failed 2 catalog specs because flow 3 left a published product in the shared test DB; fixed by unpublishing at the end of flow 3 (full rerun 27/27).
+Not covered yet: responsive (375/768/1440) and axe on the seller/admin/buyer pages, README clean-clone check, removal of the old mock context/data, `npm run dev` end-to-end, restart-persistence check (M10).
+Next: M10.

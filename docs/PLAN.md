@@ -8,7 +8,7 @@
 - [x] M6 checkout, idempotency, split orders, ledger
 - [x] M7 order lifecycle, cancel, return, refund
 - [x] M8 seller console
-- [ ] M9 admin console and Concurrency Lab
+- [x] M9 admin console and Concurrency Lab
 - [ ] M10 end-to-end tests, accessibility and responsive pass, README
 
 ## Acceptance checklist (from the original brief)

@@ -15,6 +15,7 @@ import { checkoutRouter, ordersRouter } from './routes/checkout.ts';
 import { catalogRouter } from './routes/catalog.ts';
 import { reviewsRouter } from './routes/reviews.ts';
 import { wishlistRouter } from './routes/wishlist.ts';
+import { adminRouter } from './routes/admin.ts';
 import { sellerRouter } from './routes/seller.ts';
 import { createLocalDiskStorage, type ImageStorage } from './storage/image-storage.ts';
 import { healthRouter } from './routes/health.ts';
@@ -55,6 +56,7 @@ export function createApp(opts: AppOptions = {}): Express {
   app.use('/api/checkout', checkoutRouter);
   app.use('/api/orders', ordersRouter);
   app.use('/api/sub-orders', subOrdersRouter);
+  app.use('/api/admin', adminRouter);
   app.use('/api/seller', sellerRouter(opts.imageStorage ?? createLocalDiskStorage(config.uploadDir)));
   app.use('/api/products/:productId/reviews', reviewsRouter);
 

@@ -56,3 +56,12 @@
 - Balance = settled net (sale credits and refund debits) + payout rows (negative); pending (COD) is reported separately and is not withdrawable. Payouts lock the seller row, so concurrent requests cannot both spend the same balance (mutation-verified).
 - CSV is a real server-side download (`/api/seller/ledger.csv`, attachment, only own rows); string cells starting with = + - @ get a leading apostrophe against spreadsheet formula injection.
 - New dependency: none (multer was already on the approved list in package.json).
+
+## M9 admin console and Concurrency Lab
+- `/api/admin/*` is admin-only (anon 401, buyer/seller 403, tested per endpoint). Seller status changes (approve, suspend, reinstate) and commission (100-5000 bps, integer) go through one strict PATCH. A fee change affects new orders only; the test asserts earlier sub-orders keep their snapshot.
+- Default fee lives in `settings.default_commission_bps` (falls back to 850 when the row is missing); new applicants read it at application time.
+- Analytics are derived from the append-only ledger (sale credits + refund debits), so cancelled/refunded parcels net to zero and cannot inflate GMV. Daily series is UTC dates for the last 14 days.
+- Categories: slug derived from name; duplicate name 409 CATEGORY_EXISTS; delete refused with 409 CATEGORY_IN_USE while any product (published or not) uses it.
+- Concurrency Lab runs inside the API process: N simultaneous `inventory.reserveStock(db, variant, 1)` calls (the exact conditional UPDATE the cart uses), each timed with `performance.now()`, then releases exactly what it took in a `finally`. It targets published variants of active ateliers only and cannot exceed the free units, so it never touches units held by buyers; worst case a real buyer sees a momentary "just taken" for a few milliseconds. N is 2-100. It does not go through HTTP/cart rows (cart lines need a user); it exercises the same guard and DB row contention. Mutation-verified: skipping the release fails the lab tests.
+- UI: admin uses the graphite surface (`on-graphite`), added `--color-danger-on-dark` for error text on graphite. The returns decision reuses `POST /api/sub-orders/:code/return-decision` from M7.
+- e2e hygiene: the flow that publishes a product unpublishes it at the end because other specs assert on the seeded six works and the test DB is reset once per run, not per spec.
