@@ -39,3 +39,10 @@
 - Ledger at checkout: one `sale_credit` per sub-order (gross = subtotal, commission, net); `settled` for card/escrow, `pending` for COD (settles at DELIVERED in M7). Buyer DTOs omit commission/net; admins see them.
 - Status events use JS-side timestamps (PLACED, then PAID +1 ms) because `now()` is constant within a transaction and would make history order ambiguous.
 - Operational note: a Playwright run left alive by an interrupted command shares the `_test` database with the next run and causes spurious failures; check `pgrep -fl playwright` before re-running.
+
+## M7 order lifecycle
+- One graph: `server/domain/order-state.ts` (`ALLOWED_TRANSITIONS`, `isLegalTransition`, `authorizeTransition`), pure and unit-tested. Check order in the service: ownership (403) -> legality (409 ILLEGAL_TRANSITION) -> role permission (403) -> body rules (400 TRACKING_REQUIRED / REASON_REQUIRED). Legality comes before role so a wrong-state request is a 409 for everyone who owns the parcel.
+- Return approval and refund are not on the generic endpoint: `POST /api/sub-orders/:code/return-decision` is admin-only; approve runs RETURN_REQUESTED -> RETURNED -> REFUNDED in one transaction (two status events, 1 ms apart, actor = admin), restocks and appends a `refund_debit` that is the exact negation of the sale credit. Reject returns to DELIVERED with no money or stock change.
+- PLACED -> PAID is only accepted for cash-on-delivery orders (seller confirms); card/escrow orders are PAID by the gateway at checkout.
+- Concurrency: every command locks the sub-order row (`FOR UPDATE`) and re-reads status in the transaction. Mutation-verified: without the lock, 5 concurrent cancels double-restock.
+- Ledger stays append-only: a cancel/refund never edits the sale credit; it adds `refund_debit` (settled if the sale was settled, pending for unsettled COD). COD sale credits flip pending -> settled (the one update the trigger permits) at DELIVERED. Parent payment status becomes REFUNDED only when every parcel is cancelled/refunded, and PAID for COD once no parcel is still open.

@@ -10,6 +10,7 @@ import { originCheck } from './http/origin.ts';
 import { createSessionMiddleware } from './http/session.ts';
 import { authRouter } from './routes/auth.ts';
 import { cartRouter } from './routes/cart.ts';
+import { subOrdersRouter } from './routes/lifecycle.ts';
 import { checkoutRouter, ordersRouter } from './routes/checkout.ts';
 import { catalogRouter } from './routes/catalog.ts';
 import { reviewsRouter } from './routes/reviews.ts';
@@ -48,6 +49,7 @@ export function createApp(opts: AppOptions = {}): Express {
   app.use('/api/cart', cartRouter);
   app.use('/api/checkout', checkoutRouter);
   app.use('/api/orders', ordersRouter);
+  app.use('/api/sub-orders', subOrdersRouter);
   app.use('/api/products/:productId/reviews', reviewsRouter);
 
   app.use('/api', notFoundHandler);

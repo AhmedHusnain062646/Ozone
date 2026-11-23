@@ -6,6 +6,7 @@ import { formatDateTime, formatMoney } from '../../lib/format.ts';
 import { STATUS_LABEL, statusTone } from '../../lib/status.ts';
 import type { OrderData, SubOrderData } from '../../lib/types.ts';
 import { Badge, Card, QueryBoundary } from '../ui/index.ts';
+import { OrderActions } from './OrderActions.tsx';
 
 export function Timeline({ sub }: { sub: SubOrderData }) {
   return (
@@ -96,7 +97,7 @@ export function OrderDetailView() {
             </p>
             <p className="mt-1 text-sm text-sage">Ships to {o.shippingAddress.fullName}, {o.shippingAddress.street}, {o.shippingAddress.city}</p>
             <div className="mt-8 space-y-6">
-              {o.subOrders.map((sub) => <SubOrderCard key={sub.id} sub={sub} />)}
+              {o.subOrders.map((sub) => <SubOrderCard key={sub.id} sub={sub} actions={<OrderActions sub={sub} />} />)}
             </div>
           </>
         )}

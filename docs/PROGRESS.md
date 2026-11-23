@@ -70,3 +70,13 @@ Commands and results:
 - A mid-gate run showed 2 spurious e2e failures caused by a stale Playwright run of mine sharing the `_test` DB; killed only my own PIDs and the clean rerun passed.
 Not covered: lifecycle actions on orders (M7); multi-quantity cross-seller race at checkout.
 Next: M7 order lifecycle, cancel, return, refund.
+
+## Iteration 2, M7 order lifecycle, cancel, return, refund (DONE)
+Changed: `server/domain/order-state.ts`, `repositories/lifecycle.ts`, `services/lifecycle.ts`, `routes/lifecycle.ts` (`POST /api/sub-orders/:code/transitions`, `/return-decision`); UI: `OrderActions` (cancel + return modals) on the order detail.
+Commands and results:
+- Red first: both new test files failed with "Cannot find module order-state.ts"; after implementation `npx vitest run` 12 files / 117 tests passed.
+- Covered: the generated set of ALL illegal (from, to) pairs (81 minus legal edges) each returns 409 ILLEGAL_TRANSITION and leaves the row unchanged; seller isolation 403; buyer/seller/admin role rules; tracking required for SHIPPED; every event records the session actor; cancel restores stock and the ledger nets to zero (gross, commission, net); 5 concurrent cancels -> one 200, four 409, one refund_debit, stock restored once; COD pending until DELIVERED then settled, COD cancel stays pending and nets to zero; return needs a reason; approve -> REFUNDED with exact `refund_debit` negation and restock; reject -> DELIVERED unchanged; return decision admin-only and not repeatable; a refund in a two-seller order leaves the other parcel and parent PAID.
+- Mutation checks: removing `FOR UPDATE` failed the concurrent-cancel test; removing the ledger reversal on cancel failed 3 tests. Both restored; 117/117.
+- `npm run lint` 0, `npm run build` 0, `npm run test:e2e` 22 passed / exit 0 (2 new: cancel one parcel of a two-atelier order leaves the other live; return request requires a reason and shows "Return requested").
+Not covered yet: the admin approval UI and the ship/return/refund e2e through real consoles (M8/M9).
+Next: M8 seller console and M9 admin console.

@@ -1,6 +1,6 @@
 // ABOUTME: The single typed API client. Every network call in the SPA goes through `request`.
 // ABOUTME: Server errors arrive as { error: { code, message, details } } and surface as ApiError.
-import type { CartData, CatalogQuery, CheckoutInput, OrderData, CategoryData, Paginated, ProductCardData, ProductDetailData, SessionUser } from './types.ts';
+import type { CartData, CatalogQuery, CheckoutInput, OrderData, OrderStatus, SubOrderData, CategoryData, Paginated, ProductCardData, ProductDetailData, SessionUser } from './types.ts';
 
 export class ApiError extends Error {
   constructor(
@@ -90,6 +90,13 @@ export const api = {
   orders: {
     list: () => request<OrderData[]>('GET', '/orders'),
     get: (code: string) => request<OrderData>('GET', `/orders/${encodeURIComponent(code)}`),
+  },
+
+  subOrders: {
+    transition: (code: string, body: { to: OrderStatus; trackingNumber?: string; reason?: string }) =>
+      request<SubOrderData>('POST', `/sub-orders/${encodeURIComponent(code)}/transitions`, body),
+    decideReturn: (code: string, body: { decision: 'approve' | 'reject'; note?: string }) =>
+      request<SubOrderData>('POST', `/sub-orders/${encodeURIComponent(code)}/return-decision`, body),
   },
 
   reviews: {

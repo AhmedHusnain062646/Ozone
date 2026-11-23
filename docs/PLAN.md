@@ -6,7 +6,7 @@
 - [x] M4 catalog, wishlist, reviews
 - [x] M5 cart and reservations
 - [x] M6 checkout, idempotency, split orders, ledger
-- [ ] M7 order lifecycle, cancel, return, refund
+- [x] M7 order lifecycle, cancel, return, refund
 - [ ] M8 seller console
 - [ ] M9 admin console and Concurrency Lab
 - [ ] M10 end-to-end tests, accessibility and responsive pass, README
