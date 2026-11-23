@@ -1,6 +1,8 @@
 // ABOUTME: Loads environment config once; picks the test database when NODE_ENV=test.
 // ABOUTME: Fails fast with the name of any missing variable (never prints values).
 import 'dotenv/config';
+import os from 'node:os';
+import path from 'node:path';
 
 function required(name: string): string {
   const value = process.env[name];
@@ -18,6 +20,8 @@ export const config = {
   sessionSecret: required('SESSION_SECRET'),
   // Number of reverse-proxy hops to trust for X-Forwarded-* (0 = none). Set TRUST_PROXY=1 behind one proxy.
   trustProxy: Number(process.env.TRUST_PROXY ?? 0),
+  // Product image files. Tests write to the OS temp dir so they never touch the repo.
+  uploadDir: process.env.UPLOAD_DIR ?? (isTest ? path.join(os.tmpdir(), 'ozone-test-uploads') : path.resolve('uploads')),
   reservationTtlMs: 10 * 60 * 1000,
   sweepIntervalMs: 30_000,
 } as const;

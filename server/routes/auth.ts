@@ -17,6 +17,14 @@ const registerBody = z.strictObject({
   password: z.string().min(10, 'Password must be at least 10 characters').max(128),
   displayName: z.string().trim().min(1).max(80),
 });
+const applySellerBody = z.strictObject({
+  email,
+  password: z.string().min(10, 'Password must be at least 10 characters').max(128),
+  displayName: z.string().trim().min(1).max(80),
+  atelierName: z.string().trim().min(1).max(80),
+  tagline: z.string().trim().max(140).optional(),
+  location: z.string().trim().max(80).optional(),
+});
 const loginBody = z.strictObject({ email, password: z.string().min(1).max(128) });
 
 /** Replaces the session id (and destroys the old session) so a pre-login id can never become authenticated. */
@@ -53,6 +61,20 @@ export function authRouter(limits: { limit: number; windowMs: number }) {
       req.auth = undefined;
       await new Promise<void>((resolve, reject) => attachAuth(req, res, (e) => (e ? reject(e) : resolve())));
       logger.info({ userId }, 'user registered');
+      res.status(201).json({ data: toUserDto(req.auth!) });
+    }),
+  );
+
+  router.post(
+    '/apply-seller',
+    limiter,
+    validate({ body: applySellerBody }),
+    asyncHandler(async (req, res) => {
+      const userId = await authService.applyAsSeller(req.body);
+      await startSession(req, userId);
+      req.auth = undefined;
+      await new Promise<void>((resolve, reject) => attachAuth(req, res, (e) => (e ? reject(e) : resolve())));
+      logger.info({ userId, sellerId: req.auth!.sellerId }, 'seller applied');
       res.status(201).json({ data: toUserDto(req.auth!) });
     }),
   );

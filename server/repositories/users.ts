@@ -34,3 +34,20 @@ export async function createBuyer(input: { email: string; passwordHash: string; 
   const [row] = await db.insert(s.users).values({ ...input, role: 'buyer' }).returning();
   return row;
 }
+
+/** Creates the login and its atelier together so a half-created applicant can never exist. */
+export async function createSellerApplicant(
+  input: { email: string; passwordHash: string; displayName: string },
+  atelier: { slug: string; name: string; tagline: string; location: string; commissionBps: number },
+): Promise<UserRow> {
+  return db.transaction(async (tx) => {
+    const [user] = await tx.insert(s.users).values({ ...input, role: 'seller' }).returning();
+    await tx.insert(s.sellers).values({ ...atelier, userId: user.id, status: 'pending_approval', verified: false });
+    return user;
+  });
+}
+
+export async function getDefaultCommissionBps(): Promise<number> {
+  const [row] = await db.select().from(s.settings).where(eq(s.settings.key, s.defaultFee.key));
+  return Number(row?.value ?? s.defaultFee.initial);
+}

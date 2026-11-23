@@ -170,3 +170,41 @@ export interface CheckoutInput {
   shippingAddress: ShippingAddress;
   sandboxOutcome?: 'approve' | 'decline';
 }
+
+export interface SellerProfile {
+  id: string;
+  name: string;
+  slug: string;
+  tagline: string;
+  location: string;
+  status: 'active' | 'pending_approval' | 'suspended';
+  verified: boolean;
+  commissionBps: number;
+}
+export interface SellerVariant { id: string; name: string; sku: string; priceDeltaCents: number; stock: number; reserved: number }
+export interface SellerImage { id: string; url: string; position: number }
+export interface SellerProduct {
+  id: string; slug: string; title: string; categoryId: string; basePriceCents: number;
+  shortDescription: string; description: string; material: string; origin: string;
+  limitedEdition: boolean; lowStockThreshold: number; isPublished: boolean;
+  images: SellerImage[]; variants: SellerVariant[];
+}
+export interface SellerProductInput {
+  title: string; categoryId: string; basePriceCents: number; shortDescription: string; description: string; material: string; origin: string;
+  limitedEdition: boolean; lowStockThreshold: number;
+}
+export interface SellerOrder {
+  id: string; code: string; orderCode: string; createdAt: string; status: OrderStatus; paymentMethod: PaymentMethod;
+  shipTo: ShippingAddress; trackingNumber: string | null; returnReason: string | null;
+  subtotalCents: number; commissionCents: number; netCents: number;
+  items: { productTitle: string; variantName: string; sku: string; quantity: number; unitPriceCents: number }[];
+}
+export interface Balance { availableCents: number; pendingCents: number; disbursedCents: number }
+export interface LedgerRow {
+  id: string; createdAt: string; type: 'sale_credit' | 'refund_debit' | 'payout_disbursement'; status: 'pending' | 'settled' | 'disbursed';
+  orderCode: string | null; grossCents: number; commissionCents: number; netCents: number;
+}
+export interface SellerSummary {
+  grossCents: number; netCents: number; orderCount: number; toFulfilCount: number; balance: Balance;
+  lowStock: { variantId: string; productTitle: string; variantName: string; stock: number; reserved: number }[];
+}

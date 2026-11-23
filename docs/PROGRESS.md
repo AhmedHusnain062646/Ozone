@@ -80,3 +80,13 @@ Commands and results:
 - `npm run lint` 0, `npm run build` 0, `npm run test:e2e` 22 passed / exit 0 (2 new: cancel one parcel of a two-atelier order leaves the other live; return request requires a reason and shows "Return requested").
 Not covered yet: the admin approval UI and the ship/return/refund e2e through real consoles (M8/M9).
 Next: M8 seller console and M9 admin console.
+
+## Iteration 2, M8 seller console (DONE)
+Changed: `POST /api/auth/apply-seller`; `/api/seller/*` (me, summary, products CRUD + publish, variants, images, orders, balance, ledger JSON + CSV, payouts); `ImageStorage`; UI `SellerDashboard` (tabs: Overview, Products, Orders, Earnings), `ProductEditor`, "Sell on Ozone" tab in the auth modal, route `/seller`.
+Commands and results:
+- Red first: 18 failing seller tests before implementation; after: `npx vitest run` 13 files / 135 tests passed.
+- Covered: apply -> pending_approval + session + default fee; forged status/commission and duplicate email rejected; role gates (anon 401, buyer/admin 403); drafts invisible to storefront; validation (price, SKU uniqueness, unknown category, extra fields); publish gate; cross-seller 404s with data unchanged; stock floor vs carts; PNG upload served with nosniff and deleted; spoofed script-as-PNG and SVG 415, 3 MB file 413, missing file 400; order queue isolation; balance maths with pending/disbursed; payout above balance 422, exact balance ok; 5 concurrent 60% payouts -> exactly one; pending seller cannot withdraw; CSV only own rows with header and attachment headers.
+- Mutation checks: removing `FOR UPDATE` on the seller row failed the concurrent payout test; skipping the image magic-byte check failed the non-image test. Both restored; 18/18.
+- `npm run lint` 0, `npm run build` 0, `npm run test:e2e` 24 passed / exit 0 (2 new: applicant sees pending banner, drafts a piece, publish disabled, uploads a photo; seeded active atelier packs, ships with required tracking number, buyer sees Shipped + tracking).
+Not covered yet: approve -> publish -> storefront e2e (needs the admin console, M9); responsive/axe pass (M10).
+Next: M9 admin console + Concurrency Lab.

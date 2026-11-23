@@ -42,6 +42,7 @@ function useSessionMutation<V>(fn: (v: V) => Promise<SessionUser>) {
 
 export const useLogin = () => useSessionMutation(api.auth.login);
 export const useRegister = () => useSessionMutation(api.auth.register);
+export const useApplySeller = () => useSessionMutation(api.auth.applySeller);
 
 export function useLogout() {
   const qc = useQueryClient();

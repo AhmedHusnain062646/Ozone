@@ -46,3 +46,13 @@
 - PLACED -> PAID is only accepted for cash-on-delivery orders (seller confirms); card/escrow orders are PAID by the gateway at checkout.
 - Concurrency: every command locks the sub-order row (`FOR UPDATE`) and re-reads status in the transaction. Mutation-verified: without the lock, 5 concurrent cancels double-restock.
 - Ledger stays append-only: a cancel/refund never edits the sale credit; it adds `refund_debit` (settled if the sale was settled, pending for unsettled COD). COD sale credits flip pending -> settled (the one update the trigger permits) at DELIVERED. Parent payment status becomes REFUNDED only when every parcel is cancelled/refunded, and PAID for COD once no parcel is still open.
+
+## M8 seller console
+- Seller application: `POST /api/auth/apply-seller` (strict body, rate-limited like register) creates user(role=seller) + atelier(status=pending_approval, verified=false) in one transaction at the platform default commission (`settings.default_commission_bps`, falling back to 850). Status/commission fields in the body are a 400. Only an admin changes status (M9).
+- Seller API is scoped by the session's `sellerId`; ownership is part of each WHERE, so another seller's product/variant/image is a 404 (not 403) and nothing changes.
+- Publish gate: unpublishing is always allowed; publishing and payouts need `status = active` (403 SELLER_NOT_ACTIVE). Drafts, stock and reading balances work while pending.
+- Stock floor: `PATCH /seller/variants/:id` runs `releaseExpired` then locks the variant row and rejects `stock < reserved` with 409 STOCK_BELOW_RESERVED.
+- Images: `ImageStorage` interface + local-disk implementation (`UPLOAD_DIR`, default `./uploads`, OS temp dir under test). Multer memory storage, 2 MB cap (413), type decided by magic bytes (PNG/JPEG/WebP only; SVG/HTML with a spoofed content type is 415), max 8 per product, files named by UUID. `/uploads` is served statically (helmet nosniff), unknown files 404. Deleting only removes files under /uploads (seeded/remote URLs are not ours).
+- Balance = settled net (sale credits and refund debits) + payout rows (negative); pending (COD) is reported separately and is not withdrawable. Payouts lock the seller row, so concurrent requests cannot both spend the same balance (mutation-verified).
+- CSV is a real server-side download (`/api/seller/ledger.csv`, attachment, only own rows); string cells starting with = + - @ get a leading apostrophe against spreadsheet formula injection.
+- New dependency: none (multer was already on the approved list in package.json).

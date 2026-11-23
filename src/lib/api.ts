@@ -47,7 +47,20 @@ export function qs(params: Record<string, string | number | boolean | undefined 
   return s ? `?${s}` : '';
 }
 
+async function upload<T>(path: string, form: FormData): Promise<T> {
+  let res: Response;
+  try {
+    res = await fetch(`/api${path}`, { method: 'POST', credentials: 'same-origin', body: form });
+  } catch {
+    throw new ApiError(0, 'NETWORK', 'Cannot reach the server. Check your connection and try again.');
+  }
+  const payload = await res.json().catch(() => null);
+  if (!res.ok) throw new ApiError(res.status, payload?.error?.code ?? 'UNKNOWN', payload?.error?.message ?? `Upload failed (${res.status})`, payload?.error?.details);
+  return payload.data as T;
+}
+
 export const api = {
+  upload,
   get: <T>(path: string, signal?: AbortSignal) => request<T>('GET', path, undefined, signal),
   post: <T>(path: string, body?: unknown) => request<T>('POST', path, body ?? {}),
   patch: <T>(path: string, body: unknown) => request<T>('PATCH', path, body),
@@ -59,6 +72,8 @@ export const api = {
     login: (input: { email: string; password: string }) => request<SessionUser>('POST', '/auth/login', input),
     register: (input: { email: string; password: string; displayName: string }) =>
       request<SessionUser>('POST', '/auth/register', input),
+    applySeller: (input: { email: string; password: string; displayName: string; atelierName: string; tagline?: string; location?: string }) =>
+      request<SessionUser>('POST', '/auth/apply-seller', input),
     logout: () => request<void>('POST', '/auth/logout', {}),
   },
 
