@@ -91,7 +91,7 @@ export interface OrderTimelineEvent {
 }
 
 export interface SubOrder {
-  id: string; // e.g. OZ-8849-VSP
+  id: string; // sub-order code
   sellerId: string;
   sellerName: string;
   items: {
@@ -119,7 +119,7 @@ export interface SubOrder {
 }
 
 export interface ParentOrder {
-  id: string; // e.g. OZ-8849-MULTI
+  id: string; // parent order code
   buyerId: string;
   buyerName: string;
   buyerEmail: string;

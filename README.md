@@ -83,6 +83,6 @@ docs/       PLAN.md, PROGRESS.md (evidence log), DECISIONS.md
 
 ## Troubleshooting
 
-- **Port 3000 is busy:** Vite moves to the next free port; use the URL it prints. Playwright never uses 3000/4000.
+- **Port 3000 is busy:** another process listening on `localhost:3000` can shadow Vite even though Vite reports 3000 (the more specific address wins). Run the two halves yourself on a free port: `npx tsx watch server/index.ts` and `npx vite --port 3001`. Playwright never uses 3000/4000.
 - **`Missing required environment variable ...`:** copy `.env.example` to `.env` and fill it in.
 - **Cannot connect to Postgres:** `docker compose up -d db` and check `docker compose ps`; the database listens on host port 5433.

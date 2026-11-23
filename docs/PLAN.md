@@ -9,18 +9,18 @@
 - [x] M7 order lifecycle, cancel, return, refund
 - [x] M8 seller console
 - [x] M9 admin console and Concurrency Lab
-- [ ] M10 end-to-end tests, accessibility and responsive pass, README
+- [x] M10 end-to-end tests, accessibility and responsive pass, README
 
 ## Acceptance checklist (from the original brief)
-- [ ] README steps (`docker compose up -d`, `npm install`, `npm run db:migrate`, `npm run db:seed`, `npm run dev`) start API and web from a clean clone.
-- [ ] `npm run lint`, `npm test`, `npm run build`, `npm run test:e2e` all exit 0.
-- [ ] `grep -rn "alert(\|localStorage" src/` empty for business data; no hardcoded order/seller/user IDs in `src/`.
-- [ ] Test: 20 parallel reservations on stock-1 variant -> exactly 1 success, 19 `INVENTORY_CONFLICT`; stock/reserved never negative.
-- [ ] Test: same idempotency key twice, including concurrently -> exactly one order.
-- [ ] Tests: every illegal transition 409; seller cannot read/change another seller's products or sub-orders; buyer cannot read another buyer's orders (403).
-- [ ] Tests: gross = commission + net per sub-order; refund reverses the sale exactly; payout above available balance rejected.
-- [ ] E2E: buyer registers, buys from two ateliers in one checkout, sees one parent order with two sub-orders.
-- [ ] E2E: seller packs and ships with tracking; buyer requests return; admin approves; ledger shows `refund_debit`.
-- [ ] E2E: seller applies, admin approves, seller publishes a product, it appears in the storefront.
-- [ ] Playwright at 375/768/1440px: no horizontal scroll; axe no serious/critical on storefront, product, cart, checkout, orders, seller, admin.
-- [ ] Data survives a server restart and a cleared browser.
+- [x] README steps (`docker compose up -d`, `npm install`, `npm run db:migrate`, `npm run db:seed`, `npm run dev`) start API and web from a clean clone.
+- [x] `npm run lint`, `npm test`, `npm run build`, `npm run test:e2e` all exit 0.
+- [x] `grep -rn "alert(\|localStorage" src/` empty for business data; no hardcoded order/seller/user IDs in `src/`.
+- [x] Test: 20 parallel reservations on stock-1 variant -> exactly 1 success, 19 `INVENTORY_CONFLICT`; stock/reserved never negative.
+- [x] Test: same idempotency key twice, including concurrently -> exactly one order.
+- [x] Tests: every illegal transition 409; seller cannot read/change another seller's products or sub-orders; buyer cannot read another buyer's orders (403).
+- [x] Tests: gross = commission + net per sub-order; refund reverses the sale exactly; payout above available balance rejected.
+- [x] E2E: buyer registers, buys from two ateliers in one checkout, sees one parent order with two sub-orders.
+- [x] E2E: seller packs and ships with tracking; buyer requests return; admin approves; ledger shows `refund_debit`.
+- [x] E2E: seller applies, admin approves, seller publishes a product, it appears in the storefront.
+- [x] Playwright at 375/768/1440px: no horizontal scroll; axe no serious/critical on storefront, product, cart, checkout, orders, seller, admin.
+- [x] Data survives a server restart and a cleared browser.

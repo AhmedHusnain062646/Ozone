@@ -1,4 +1,4 @@
-STATUS: IN_PROGRESS
+STATUS: COMPLETE
 
 # Progress log
 
@@ -101,3 +101,21 @@ Commands and results:
 - A first full run failed 2 catalog specs because flow 3 left a published product in the shared test DB; fixed by unpublishing at the end of flow 3 (full rerun 27/27).
 Not covered yet: responsive (375/768/1440) and axe on the seller/admin/buyer pages, README clean-clone check, removal of the old mock context/data, `npm run dev` end-to-end, restart-persistence check (M10).
 Next: M10.
+
+## Iteration 2, M10 end-to-end, accessibility, responsive, README (DONE)
+Changed: `e2e/quality.spec.ts` (overflow + axe at 375/768/1440 on storefront, product, sign-in, cart, checkout x3 steps, orders list/detail, wishlist, seller x4 tabs, admin x4 tabs + lab; plus a cleared-cookies/storage persistence test), README rewritten, prototype context/mock data retired, a11y/CSS fixes (see DECISIONS).
+Acceptance checklist evidence (final run, commands as written in the brief):
+- `npm run lint` exit 0; `npm test` exit 0 (14 files, 147 tests); `npm run build` exit 0; `npm run test:e2e` exit 0 (34 passed).
+- `grep -rn "alert(\|localStorage" src/` -> no output, exit 1; second grep for the seeded seller/order/buyer ids and names (`seller-vane`, `OZ-8849`, `DIS-9921`, `SUB-AV`, `Julian`, `Dana`...) over `src/` -> none.
+- 20 parallel reservations: `server/tests/cart.test.ts` (M5) -> 1 success, 19 INVENTORY_CONFLICT, stock/reserved checked; the lab test repeats it through the admin API.
+- Idempotency, incl. concurrent: `server/tests/checkout.test.ts` (8 concurrent same-key submissions -> one 201, seven 200, one order/sub-order/ledger row).
+- Illegal transitions: `server/tests/lifecycle.test.ts` iterates every non-legal (from, to) pair -> 409; seller cross-access 403 (sub-orders) / 404 (products); buyer reading another buyer's order 403.
+- Money: gross = commission + net asserted per sub-order and ledger row; refund reverses the sale exactly (net, commission, gross all zero-sum); payout above balance 422 and concurrent payouts cannot overdraw.
+- E2E flows: `checkout.spec.ts` (two ateliers -> one parent order, two sub-orders), `admin.spec.ts` flow 2 (ship with tracking, return request, admin approval, Refunded, seller ledger Refund row negative) and flow 3 (apply -> admin approves in UI -> publish -> storefront), `seller.spec.ts`, `lifecycle.spec.ts`, `cart.spec.ts` (two-browser race).
+- Responsive + axe: `quality.spec.ts` passes at 375, 768 and 1440 on every listed screen (no horizontal overflow on documentElement, no serious/critical axe violations at WCAG 2 A/AA + 2.1 A/AA tags).
+- Clean clone: `git clone` of commit 42f9930 into a scratch dir, `npm ci` (446 packages), `.env` from `.env.example` with generated secret, empty database `ozone_clean_dev`: `npm run db:migrate` -> "migrations applied"; `npm run db:seed` -> "seeded: 1 admin, 2 buyers, 6 sellers, 6 products, 3 orders"; API started and answered `/api/health` {"status":"ok","database":"up"}; Vite + proxy served the app and `/api/catalog/products` on a free port.
+- Persistence: against that clone, logged in, reserved, checked out (OZ-P5DJAQDJAB), stopped and restarted the API; the same cookie jar still listed the order (session survives restart), and a fresh login (no cookies) listed it too. In the browser suite, clearing cookies + storage then signing in again shows the same orders (`quality.spec.ts`).
+Honest notes:
+- One earlier full e2e run (right after the CSS/a11y changes) had 4 failures (cart race, catalog modal, lifecycle cancel, quality cart) with timeouts and the whole run took 4.8 min; those specs passed when rerun alone (14/14) and two later full runs passed 34/34 (3.3 min). I did not identify the cause (machine load is my guess, not verified).
+- `npm run dev` binds Vite to port 3000 as the prototype did; on this machine another process shadows that port (see DECISIONS), so I verified the dev stack on a free port instead of killing it.
+- Known limitations: payments are simulated; the lab exercises the DB stock guard directly (not HTTP carts); uploads use local disk (the `ImageStorage` interface is the seam for S3); rate limiting is in-memory (single process); `src/types/marketplace.ts` is unused and awaiting your OK to delete.
