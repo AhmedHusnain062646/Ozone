@@ -23,3 +23,8 @@
 - `?next=` after sign-in only honours same-origin absolute paths (no `//`, no backslash) to avoid an open redirect.
 - e2e infrastructure: Playwright starts its own API (4100, NODE_ENV=test, `_test` DB) and Vite (3100) with `API_PROXY_TARGET`; global setup runs migrate + `seed --reset` on the `_test` DB with a fixed local password. Vitest and Playwright share that DB, so run them one after the other (npm scripts do not run them in parallel).
 - `.gitignore` gained `test-results/`, `playwright-report/`, `uploads/` (outside the listed scope, needed for the clean-tree criterion).
+- Catalog visibility: a product is public only if `is_published` AND its seller is `active`; the predicate lives in one place (`repositories/catalog.ts`). Search escapes `%`, `_`, `\` so they match literally. Price filters/sort use the "from" price (base + cheapest variant delta).
+- Review eligibility is literal: the buyer owns a sub-order containing the product whose status is currently `DELIVERED`. A later return/refund therefore removes eligibility for a not-yet-written review; an already-written review stays. `verifiedPurchase` on each review is computed the same way (seeded reviewers have no purchases and show unverified, which is honest).
+- Wishlist PUT/DELETE are idempotent (204 both ways). Wishlist and review identity come from the session.
+- Drizzle renders column refs without the table prefix in single-table selects; correlated subqueries in such selects must qualify by hand (found via a 500 on /categories).
+- The error handler logs 500s through pino, which is silent under NODE_ENV=test; set LOG_LEVEL temporarily or add a throw-to-print probe when a test shows a bare 500.

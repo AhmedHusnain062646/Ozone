@@ -3,7 +3,7 @@
 - [x] M1 server, database, schema, migrations, seed ported from mockData.ts, test harness
 - [x] M2 auth and role checks
 - [x] M3 UI foundation: tokens, primitives, router, API client
-- [ ] M4 catalog, wishlist, reviews
+- [x] M4 catalog, wishlist, reviews
 - [ ] M5 cart and reservations
 - [ ] M6 checkout, idempotency, split orders, ledger
 - [ ] M7 order lifecycle, cancel, return, refund

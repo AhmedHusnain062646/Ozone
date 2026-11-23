@@ -39,3 +39,12 @@ Commands and results:
 - `npm run test:e2e`: first run 4 failed (2 were my selector hitting the footer's second "Sign in" link; 2 were a real bug: `qc.clear()` orphaned the header's `me` observer so the UI never showed the signed-in state). After the fix: 5 passed (hero loads with naturalWidth>0; modal focus trap over 12 Tab presses + Esc closes; wrong password shows inline error then seeded buyer signs in, survives reload, signs out; register signs in as buyer; unknown route shows not-found).
 Not yet verified: contrast/axe and responsive checks (M10); screens other than auth are still prototype files orphaned from the router.
 Next: M4 catalog, wishlist, reviews.
+
+## Iteration 2, M4 catalog, wishlist, reviews (DONE)
+Changed: `server/repositories|services|routes` for catalog (`/api/catalog/products|products/:slug|categories`), wishlist (`/api/wishlist`), reviews (`POST /api/products/:productId/reviews`); frontend Storefront (URL-driven search/category/sort/price/pagination), ProductCard, routed ProductDetailModal (+ review form), ProductPurchasePanel (variant picker; add-to-cart lands in M5), WishlistView; API client + types + wishlist hooks.
+Commands and results:
+- Tests first: 18 new server tests failed (404s / missing routes) before implementation. After: `npx vitest run` 8 files / 64 tests passed. One 500 (categories subquery unqualified column) and one test-teardown bug (afterAll inside the first describe) found and fixed along the way.
+- Mutation check on the review rule: replacing `so.status = 'DELIVERED'` with `true` failed "rejects a buyer with no purchase, or a purchase that is not DELIVERED yet"; restored, 9/9 pass. (A first attempt with GNU-only `sed 0,/re/` silently did nothing on macOS and wrongly showed 9/9; redone with a verified edit.)
+- `npm run lint` exit 0; `npm run build` exit 0; `npm run test:e2e` 13 passed (catalog e2e: 8 new, covering seeded list of 6 with the pending atelier hidden, server-side search/category/sort in URL, empty state + Clear filters, product modal deep link and Esc keeping filters, unknown slug error state, wishlist redirect/save/list/remove, wishlist route guard, review by the seeded buyer with a delivered purchase).
+Not covered: pagination UI at >12 products (server pagination is unit-tested; seed has 6); axe/responsive (M10).
+Next: M5 cart and reservations.

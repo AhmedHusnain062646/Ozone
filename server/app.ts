@@ -9,6 +9,9 @@ import { attachAuth } from './http/auth.ts';
 import { originCheck } from './http/origin.ts';
 import { createSessionMiddleware } from './http/session.ts';
 import { authRouter } from './routes/auth.ts';
+import { catalogRouter } from './routes/catalog.ts';
+import { reviewsRouter } from './routes/reviews.ts';
+import { wishlistRouter } from './routes/wishlist.ts';
 import { healthRouter } from './routes/health.ts';
 
 export interface AppOptions {
@@ -38,6 +41,10 @@ export function createApp(opts: AppOptions = {}): Express {
     '/api/auth',
     authRouter(opts.authRateLimit ?? { limit: config.isTest ? 10_000 : 20, windowMs: 15 * 60 * 1000 }),
   );
+  app.use('/api/catalog', catalogRouter);
+  app.use('/api/wishlist', wishlistRouter);
+  app.use('/api/products/:productId/reviews', reviewsRouter);
+
   app.use('/api', notFoundHandler);
 
   if (config.isProduction) {

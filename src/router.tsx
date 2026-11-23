@@ -2,6 +2,9 @@
 // ABOUTME: Role-gated areas wrap their element in <RequireRole>; later milestones add their routes here.
 import { createBrowserRouter } from 'react-router';
 import { AuthenticationModal } from './components/auth/AuthenticationModal.tsx';
+import { ProductDetailModal } from './components/buyer/ProductDetailModal.tsx';
+import { WishlistView } from './components/buyer/WishlistView.tsx';
+import { RequireRole } from './lib/auth.tsx';
 import { Storefront } from './components/buyer/Storefront.tsx';
 import { AppLayout } from './components/common/AppLayout.tsx';
 import { Forbidden, NotFound } from './components/common/StatusPages.tsx';
@@ -11,7 +14,14 @@ export const router = createBrowserRouter([
     path: '/',
     Component: AppLayout,
     children: [
-      { path: '/', Component: Storefront, children: [{ path: 'sign-in', Component: AuthenticationModal }] },
+      {
+        path: '/',
+        Component: Storefront, children: [
+          { path: 'sign-in', Component: AuthenticationModal },
+          { path: 'products/:slug', Component: ProductDetailModal },
+        ],
+      },
+      { path: 'wishlist', element: <RequireRole><WishlistView /></RequireRole> },
       { path: 'forbidden', Component: Forbidden },
       { path: '*', Component: NotFound },
     ],

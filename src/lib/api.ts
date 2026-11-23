@@ -1,6 +1,6 @@
 // ABOUTME: The single typed API client. Every network call in the SPA goes through `request`.
 // ABOUTME: Server errors arrive as { error: { code, message, details } } and surface as ApiError.
-import type { SessionUser } from './types.ts';
+import type { CatalogQuery, CategoryData, Paginated, ProductCardData, ProductDetailData, SessionUser } from './types.ts';
 
 export class ApiError extends Error {
   constructor(
@@ -60,5 +60,23 @@ export const api = {
     register: (input: { email: string; password: string; displayName: string }) =>
       request<SessionUser>('POST', '/auth/register', input),
     logout: () => request<void>('POST', '/auth/logout', {}),
+  },
+
+  catalog: {
+    list: (query: CatalogQuery, signal?: AbortSignal) =>
+      request<Paginated<ProductCardData>>('GET', `/catalog/products${qs({ ...query })}`, undefined, signal),
+    detail: (slug: string) => request<ProductDetailData>('GET', `/catalog/products/${encodeURIComponent(slug)}`),
+    categories: () => request<CategoryData[]>('GET', '/catalog/categories'),
+  },
+
+  wishlist: {
+    list: () => request<ProductCardData[]>('GET', '/wishlist'),
+    add: (productId: string) => request<void>('PUT', `/wishlist/${productId}`, {}),
+    remove: (productId: string) => request<void>('DELETE', `/wishlist/${productId}`),
+  },
+
+  reviews: {
+    create: (productId: string, input: { rating: number; title: string; comment: string }) =>
+      request<{ id: string }>('POST', `/products/${productId}/reviews`, input),
   },
 };

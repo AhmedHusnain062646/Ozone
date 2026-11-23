@@ -7,7 +7,7 @@ test('home renders the hero image and navigation', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByRole('heading', { level: 1 })).toContainText('Objects made slowly');
   await expect(page.getByRole('banner').getByRole('link', { name: 'Sign in' })).toBeVisible();
-  const loaded = await page.locator('section img').evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0);
+  const loaded = await page.locator('section').first().locator('img').evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0);
   expect(loaded).toBe(true);
 });
 
