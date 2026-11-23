@@ -1,0 +1,19 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: ozone
+      POSTGRES_PASSWORD: ozone_local_dev
+      POSTGRES_DB: ozone_dev
+    ports:
+      - "5433:5432"
+    volumes:
+      - ozone_pgdata:/var/lib/postgresql/data
+      - ./docker/init-test-db.sql:/docker-entrypoint-initdb.d/init-test-db.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ozone -d ozone_dev"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+volumes:
+  ozone_pgdata:
