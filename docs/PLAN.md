@@ -5,7 +5,7 @@
 - [x] M3 UI foundation: tokens, primitives, router, API client
 - [x] M4 catalog, wishlist, reviews
 - [x] M5 cart and reservations
-- [ ] M6 checkout, idempotency, split orders, ledger
+- [x] M6 checkout, idempotency, split orders, ledger
 - [ ] M7 order lifecycle, cancel, return, refund
 - [ ] M8 seller console
 - [ ] M9 admin console and Concurrency Lab

@@ -106,3 +106,67 @@ export interface CartData {
   expiresAt: string | null;
   serverTime: string;
 }
+
+export type OrderStatus = 'PLACED' | 'PAID' | 'PACKED' | 'SHIPPED' | 'DELIVERED' | 'RETURN_REQUESTED' | 'RETURNED' | 'REFUNDED' | 'CANCELLED';
+export type PaymentMethod = 'sandbox_card' | 'ozone_escrow' | 'cod';
+
+export interface ShippingAddress {
+  fullName: string;
+  street: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
+}
+
+export interface OrderItemData {
+  productId: string;
+  variantId: string;
+  productTitle: string;
+  variantName: string;
+  sku: string;
+  unitPriceCents: number;
+  quantity: number;
+  subtotalCents: number;
+}
+
+export interface OrderEvent {
+  status: OrderStatus;
+  at: string;
+  actorLabel: string;
+  actorRole: UserRole | null;
+  note: string | null;
+}
+
+export interface SubOrderData {
+  id: string;
+  code: string;
+  seller: { id: string; name: string };
+  status: OrderStatus;
+  subtotalCents: number;
+  trackingNumber: string | null;
+  returnReason: string | null;
+  commissionBps?: number;
+  commissionCents?: number;
+  netCents?: number;
+  items: OrderItemData[];
+  history: OrderEvent[];
+}
+
+export interface OrderData {
+  id: string;
+  code: string;
+  createdAt: string;
+  paymentMethod: PaymentMethod;
+  paymentStatus: 'PAID' | 'PENDING_COD' | 'REFUNDED';
+  totalCents: number;
+  shippingAddress: ShippingAddress;
+  subOrders: SubOrderData[];
+}
+
+export interface CheckoutInput {
+  idempotencyKey: string;
+  paymentMethod: PaymentMethod;
+  shippingAddress: ShippingAddress;
+  sandboxOutcome?: 'approve' | 'decline';
+}
