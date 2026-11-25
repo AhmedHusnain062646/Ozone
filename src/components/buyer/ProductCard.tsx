@@ -1,13 +1,13 @@
-// ABOUTME: Catalog tile: 4:5 editorial image, atelier badge, mono price, availability, and a wishlist toggle.
+// ABOUTME: Catalog tile: 4:5 editorial image, atelier name, mono price, scarcity notice, and a wishlist toggle.
 // ABOUTME: The tile links to the routed product modal; the wishlist button sends signed-out users to sign-in.
-import { Heart } from 'lucide-react';
+import { BadgeCheck, Heart } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router';
 import { formatMoney } from '../../lib/format.ts';
 import { useMe } from '../../lib/auth.tsx';
 import { useToggleWishlist, useWishlist } from '../../lib/wishlist.ts';
 import { cx } from '../../lib/cx.ts';
 import type { ProductCardData } from '../../lib/types.ts';
-import { Badge, SafeImage, useToast } from '../ui/index.ts';
+import { SafeImage, useToast } from '../ui/index.ts';
 
 export function ProductCard({ product }: { product: ProductCardData }) {
   const me = useMe();
@@ -31,7 +31,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
   };
 
   return (
-    <article className="group relative flex flex-col border border-linen bg-milk">
+    <article className="group relative flex flex-col">
       <Link
         to={{ pathname: `/products/${product.slug}`, search: location.pathname === '/' ? location.search : '' }}
         state={{ from: location.pathname === '/' ? location.search : '' }}
@@ -40,19 +40,27 @@ export function ProductCard({ product }: { product: ProductCardData }) {
         <div className="aspect-[4/5] overflow-hidden bg-linen">
           <SafeImage src={product.image ?? undefined} alt="" className="h-full w-full object-cover transition-transform duration-[400ms] group-hover:scale-[1.02]" />
         </div>
-        <div className="space-y-2 p-4">
-          <div className="flex flex-wrap items-center gap-2">
-            <Badge tone={product.seller.verified ? 'gold' : 'neutral'}>{product.seller.name}</Badge>
-            {product.limitedEdition && <Badge>Limited edition</Badge>}
-          </div>
+        <div className="space-y-1 pt-3">
+          <p className="flex flex-wrap items-center gap-1 text-xs text-sage">
+            <span>{product.seller.name}</span>
+            {product.seller.verified && (
+              <>
+                <BadgeCheck className="h-4 w-4 text-gold-ink" aria-hidden="true" />
+                <span className="sr-only">Verified</span>
+              </>
+            )}
+            {product.limitedEdition && <span>· Limited edition</span>}
+          </p>
           <h3 className="font-display text-xl leading-snug">{product.title}</h3>
           <div className="flex items-baseline justify-between gap-2">
             <p className={cx('font-numeric text-base', product.limitedEdition ? 'text-gold-ink' : 'text-ink')}>
               {formatMoney(product.fromPriceCents)}
             </p>
-            <p className={cx('text-xs', soldOut ? 'text-danger' : product.lowStock ? 'text-[#7a5410]' : 'text-sage')}>
-              {soldOut ? 'Sold out' : product.lowStock ? `Only ${product.available} left` : 'Available'}
-            </p>
+            {(soldOut || product.lowStock) && (
+              <p className={cx('text-xs', soldOut ? 'text-danger' : 'text-[#7a5410]')}>
+                {soldOut ? 'Sold out' : `Only ${product.available} left`}
+              </p>
+            )}
           </div>
         </div>
       </Link>

@@ -100,3 +100,32 @@ test('overviews put actionable figures first', async ({ page }) => {
   await expect(page.getByRole('term').first()).toHaveText('To fulfil');
   await expect(page.getByRole('term').nth(1)).toHaveText('Available to withdraw');
 });
+
+test('products start on the first screen and cards show only useful stock text', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  const card = page.getByRole('article').first();
+  await expect(card).toBeVisible();
+  expect((await card.boundingBox())!.y).toBeLessThan(700);
+  await expect(page.getByRole('article').getByText('Available', { exact: true })).toHaveCount(0);
+  await expect(page.getByRole('article').getByText('Verified').first()).toBeAttached();
+});
+
+test('phone filters are collapsed and report how many are active', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.goto('/?sort=price_asc&minPrice=10000');
+  const toggle = page.getByRole('button', { name: 'Filters (2)' });
+  await expect(toggle).toBeVisible();
+  await expect(page.getByLabel('Sort')).toBeHidden();
+  await toggle.click();
+  await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+  await expect(page.getByLabel('Sort')).toBeVisible();
+});
+
+test('the footer offers sign-in only to a signed-out visitor', async ({ page }) => {
+  const footerSignIn = page.getByRole('contentinfo').getByRole('link', { name: 'Sign in' });
+  await page.goto('/');
+  await expect(footerSignIn).toBeVisible();
+  await signIn(page, ACCOUNTS.buyer, '/');
+  await expect(footerSignIn).toHaveCount(0);
+});
