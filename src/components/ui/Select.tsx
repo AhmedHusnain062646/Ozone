@@ -26,7 +26,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select
         id={selectId}
         aria-invalid={error ? true : undefined}
         className={cx(
-          'min-h-12 w-full rounded-sm border bg-milk px-4 text-ink focus:border-teal focus:outline-none',
+          'min-h-12 w-full rounded-sm border bg-milk px-4 text-ink focus:border-teal focus:outline-none focus-visible:ring-1 focus-visible:ring-teal',
           error ? 'border-danger' : 'border-linen-strong',
         )}
         {...rest}

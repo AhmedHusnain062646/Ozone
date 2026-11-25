@@ -60,7 +60,7 @@ export function AdminOverview() {
               <section aria-labelledby="top-heading" className="min-w-0">
                 <h3 id="top-heading" className="font-sans text-base font-semibold">Top ateliers</h3>
                 <div className="mt-3">
-                  <Table graphite caption="Top ateliers by gross sales">
+                  <Table graphite caption="Top ateliers by gross sales" className="[&>table]:min-w-[20rem]">
                     <THead graphite><Tr><Th>Atelier</Th><Th numeric>Gross</Th><Th numeric>Commission</Th></Tr></THead>
                     <tbody>
                       {d.topSellers.map((s) => (

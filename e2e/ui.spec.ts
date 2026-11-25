@@ -129,3 +129,18 @@ test('the footer offers sign-in only to a signed-out visitor', async ({ page }) 
   await signIn(page, ACCOUNTS.buyer, '/');
   await expect(footerSignIn).toHaveCount(0);
 });
+
+test('the admin top-ateliers table shows every column beside the sidebar', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await signIn(page, ACCOUNTS.admin, '/admin');
+  const region = page.getByRole('region', { name: 'Top ateliers by gross sales' });
+  await expect(region).toBeVisible();
+  expect(await region.evaluate((el) => el.scrollWidth - el.clientWidth)).toBeLessThanOrEqual(0);
+});
+
+test('a focused select shows a ring, not only a border colour change', async ({ page }) => {
+  await page.goto('/');
+  const sort = page.getByLabel('Sort');
+  await sort.focus();
+  await expect(sort).not.toHaveCSS('box-shadow', 'none');
+});
