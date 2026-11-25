@@ -95,7 +95,6 @@ export const api = {
     add: (variantId: string, quantity: number) => request<CartData>('POST', '/cart/items', { variantId, quantity }),
     setQuantity: (variantId: string, quantity: number) => request<CartData>('PATCH', `/cart/items/${variantId}`, { quantity }),
     remove: (variantId: string) => request<void>('DELETE', `/cart/items/${variantId}`),
-    clear: () => request<void>('DELETE', '/cart'),
   },
 
   checkout: {

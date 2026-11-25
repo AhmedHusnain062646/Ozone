@@ -171,8 +171,3 @@ export const addWishlist = (userId: string, productId: string) =>
 
 export const removeWishlist = (userId: string, productId: string) =>
   db.delete(s.wishlistItems).where(and(eq(s.wishlistItems.userId, userId), eq(s.wishlistItems.productId, productId)));
-
-export async function wishlistIds(userId: string): Promise<string[]> {
-  const rows = await db.select({ id: s.wishlistItems.productId }).from(s.wishlistItems).where(eq(s.wishlistItems.userId, userId));
-  return rows.map((r) => r.id);
-}

@@ -73,3 +73,8 @@
 - Quality spec asserts overflow on `documentElement.scrollWidth`, which is stricter than the body (the body has `overflow-x: hidden`).
 - Dev note: on this machine another process (`gowa`) holds `localhost:3000`; Vite's wildcard bind also reports 3000 but traffic to 127.0.0.1:3000 reaches the other process. I did not touch that process. `npm run dev` still hardcodes `--port=3000` from the prototype; README documents running the halves on a free port.
 - Clean-clone check ran against a throwaway empty database (`ozone_clean_dev`, created and dropped by me) so migrations and seed were exercised from nothing.
+
+## Post-M10 cleanup (2026-11-25)
+- Route-level code splitting with react-router `lazy` for checkout, orders, seller, admin and wishlist; `e2e/lazy.spec.ts` asserts the storefront downloads none of them. The Concurrency Lab ships with the admin chunk.
+- Removed unused dependencies (`@google/genai`, `motion`, `autoprefixer`, `esbuild`), the unused `src/types/marketplace.ts`, `useClearCart`/`api.cart.clear` and `wishlistIds`. `DELETE /api/cart` stays.
+- Hero JPEG re-encoded at quality 72 (same 1376x768): 701 kB to 193 kB.

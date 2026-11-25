@@ -30,7 +30,6 @@ function useCartMutation<V>(fn: (v: V) => Promise<unknown>) {
 export const useAddToCart = () => useCartMutation(({ variantId, quantity }: { variantId: string; quantity: number }) => api.cart.add(variantId, quantity));
 export const useSetCartQuantity = () => useCartMutation(({ variantId, quantity }: { variantId: string; quantity: number }) => api.cart.setQuantity(variantId, quantity));
 export const useRemoveFromCart = () => useCartMutation((variantId: string) => api.cart.remove(variantId));
-export const useClearCart = () => useCartMutation(() => api.cart.clear());
 
 /** Seconds left on the soonest hold. Uses the server's clock at fetch time so a wrong local clock cannot lie. */
 export function useHoldSeconds(expiresAt: string | null | undefined, serverTime: string | undefined, fetchedAt: number) {
