@@ -1,16 +1,24 @@
 // ABOUTME: Admin overview: GMV, commission, order and atelier counts from the ledger, a 14-day sales chart and top ateliers.
 // ABOUTME: Figures are ledger-derived (net of refunds), so a cancelled or refunded parcel never inflates them.
+import { Link } from 'react-router';
+import { cx } from '../../lib/cx.ts';
 import { formatMoney } from '../../lib/format.ts';
 import { useAnalytics } from '../../lib/admin.ts';
 import { STATUS_LABEL } from '../../lib/status.ts';
 import type { OrderStatus } from '../../lib/types.ts';
 import { Card, QueryBoundary, Table, THead, Td, Th, Tr } from '../ui/index.ts';
 
-function Stat({ label, value }: { label: string; value: string }) {
+// A stat with a link is one to act on, so it is shown larger.
+function Stat({ label, value, link }: { label: string; value: string; link?: { tab: string; text: string } }) {
   return (
-    <Card graphite className="p-5">
+    <Card graphite className={cx('p-5', link && 'xl:col-span-2')}>
       <dt className="label-caps text-bone/70">{label}</dt>
-      <dd className="font-numeric mt-2 text-[28px] leading-9">{value}</dd>
+      <dd className={cx('font-numeric mt-2', link ? 'text-[32px] leading-10' : 'text-xl')}>{value}</dd>
+      {link && (
+        <dd className="mt-2">
+          <Link to={`?tab=${link.tab}`} replace className="font-medium text-mint underline underline-offset-4">{link.text}</Link>
+        </dd>
+      )}
     </Card>
   );
 }
@@ -24,6 +32,8 @@ export function AdminOverview() {
         return (
           <div className="space-y-8">
             <dl className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              <Stat label="Pending applications" value={String(d.sellersByStatus.pending_approval ?? 0)} link={{ tab: 'sellers', text: 'Review applications' }} />
+              <Stat label="Open returns" value={String(d.subOrdersByStatus.RETURN_REQUESTED ?? 0)} link={{ tab: 'returns', text: 'Review returns' }} />
               <Stat label="Gross merchandise value" value={formatMoney(d.grossCents)} />
               <Stat label="Platform commission" value={formatMoney(d.commissionCents)} />
               <Stat label="Paid to ateliers (net)" value={formatMoney(d.netToSellersCents)} />

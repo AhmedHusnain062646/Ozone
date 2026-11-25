@@ -87,3 +87,16 @@ test('a category in use cannot be deleted, and row inputs have no visible label'
   const label = page.getByText('Name of Interiors', { exact: true });
   expect((await label.boundingBox())!.width).toBeLessThanOrEqual(1);
 });
+
+test('overviews put actionable figures first', async ({ page }) => {
+  await signIn(page, ACCOUNTS.admin, '/admin');
+  await expect(page.getByRole('term').first()).toHaveText('Pending applications');
+  await expect(page.getByRole('term').nth(1)).toHaveText('Open returns');
+  await page.getByRole('definition').getByRole('link', { name: /returns/i }).click();
+  await expect(page).toHaveURL(/tab=returns/);
+
+  await page.context().clearCookies();
+  await signIn(page, ACCOUNTS.vane, '/seller');
+  await expect(page.getByRole('term').first()).toHaveText('To fulfil');
+  await expect(page.getByRole('term').nth(1)).toHaveText('Available to withdraw');
+});
