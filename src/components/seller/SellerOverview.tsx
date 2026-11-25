@@ -27,7 +27,7 @@ export function SellerOverview() {
             <Stat label="Available to withdraw" value={formatMoney(d.balance.availableCents)} note={`${formatMoney(d.balance.pendingCents)} pending (cash on delivery)`} />
           </dl>
           <section aria-labelledby="low-stock-heading">
-            <h2 id="low-stock-heading" className="font-display text-2xl">Low stock</h2>
+            <h3 id="low-stock-heading" className="font-sans text-base font-semibold">Low stock</h3>
             {d.lowStock.length === 0 ? (
               <p className="mt-3 text-sm text-sage">Every edition is above its low-stock threshold.</p>
             ) : (

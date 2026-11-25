@@ -14,7 +14,7 @@ function DefaultFee() {
   const [error, setError] = useState('');
   return (
     <Card graphite className="min-w-0 p-5">
-      <h2 className="font-display text-xl">Default platform fee</h2>
+      <h3 className="font-sans text-base font-semibold">Default platform fee</h3>
       <p className="mt-1 text-sm text-bone/70">Applied to atelier applications received from now on. Existing ateliers keep their own rate.</p>
       <QueryBoundary query={settings}>
         {(s) => (
@@ -66,7 +66,7 @@ export function AdminCatalog() {
     <div className="grid gap-8 lg:grid-cols-[1fr_1.6fr]">
       <DefaultFee />
       <section aria-labelledby="cat-heading" className="min-w-0">
-        <h2 id="cat-heading" className="font-display text-2xl">Categories</h2>
+        <h3 id="cat-heading" className="font-sans text-base font-semibold">Categories</h3>
         <form className="mt-4 flex items-end gap-3" noValidate onSubmit={(e: FormEvent) => {
           e.preventDefault();
           if (!name.trim()) return setError('Required');

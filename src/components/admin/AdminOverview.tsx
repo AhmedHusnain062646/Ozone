@@ -31,7 +31,7 @@ export function AdminOverview() {
             </dl>
 
             <section aria-labelledby="daily-heading">
-              <h2 id="daily-heading" className="font-display text-2xl">Last 14 days</h2>
+              <h3 id="daily-heading" className="font-sans text-base font-semibold">Last 14 days</h3>
               {d.daily.length === 0 ? (
                 <p className="mt-3 text-sm text-bone/70">No sales in the last 14 days.</p>
               ) : (
@@ -48,7 +48,7 @@ export function AdminOverview() {
 
             <div className="grid gap-8 lg:grid-cols-2">
               <section aria-labelledby="top-heading" className="min-w-0">
-                <h2 id="top-heading" className="font-display text-2xl">Top ateliers</h2>
+                <h3 id="top-heading" className="font-sans text-base font-semibold">Top ateliers</h3>
                 <div className="mt-3">
                   <Table graphite caption="Top ateliers by gross sales">
                     <THead graphite><Tr><Th>Atelier</Th><Th numeric>Gross</Th><Th numeric>Commission</Th></Tr></THead>
@@ -62,7 +62,7 @@ export function AdminOverview() {
                 </div>
               </section>
               <section aria-labelledby="status-heading" className="min-w-0">
-                <h2 id="status-heading" className="font-display text-2xl">Parcels by status</h2>
+                <h3 id="status-heading" className="font-sans text-base font-semibold">Parcels by status</h3>
                 <ul className="mt-3 divide-y divide-graphite-line border border-graphite-line">
                   {(Object.entries(d.subOrdersByStatus) as [OrderStatus, number][]).map(([st, n]) => (
                     <li key={st} className="flex justify-between px-4 py-2 text-sm"><span>{STATUS_LABEL[st]}</span><span className="font-numeric">{n}</span></li>

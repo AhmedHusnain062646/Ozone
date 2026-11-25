@@ -47,7 +47,7 @@ export function SellerEarnings({ canWithdraw }: { canWithdraw: boolean }) {
 
       <section aria-labelledby="ledger-heading">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 id="ledger-heading" className="font-display text-2xl">Ledger</h2>
+          <h3 id="ledger-heading" className="font-sans text-base font-semibold">Ledger</h3>
           <a href="/api/seller/ledger.csv" download className="label-caps inline-flex min-h-10 items-center border border-teal px-4 text-teal hover:bg-teal hover:text-milk">Download CSV</a>
         </div>
         <div className="mt-4">

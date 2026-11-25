@@ -76,7 +76,7 @@ test('flow 3: apply -> pending -> admin approves in the console -> publish -> ap
   await applicant.getByLabel('Password').fill('a-long-enough-password');
   await applicant.getByRole('button', { name: 'Submit application' }).click();
   await expect(applicant).toHaveURL(/\/seller/);
-  await applicant.getByRole('tab', { name: 'Products' }).click();
+  await applicant.getByRole('navigation', { name: 'Console' }).getByRole('link', { name: /^Products/ }).click();
   await applicant.getByRole('button', { name: 'Create a piece' }).click();
   const editor = applicant.getByRole('dialog', { name: 'New piece' });
   await editor.getByLabel('Title').fill(title);
@@ -99,7 +99,7 @@ test('flow 3: apply -> pending -> admin approves in the console -> publish -> ap
   await expect(sellerRow).toContainText('Active');
 
   await applicant.reload();
-  await applicant.getByRole('tab', { name: 'Products' }).click();
+  await applicant.getByRole('navigation', { name: 'Console' }).getByRole('link', { name: /^Products/ }).click();
   await applicant.getByRole('row', { name: new RegExp(title) }).getByRole('button', { name: /^Publish/ }).click();
   await expect(applicant.getByRole('row', { name: new RegExp(title) }).getByText('Published')).toBeVisible();
 

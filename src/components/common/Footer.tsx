@@ -1,8 +1,10 @@
 // ABOUTME: Site footer: wordmark, short positioning line, and a sandbox-payments disclosure.
-// ABOUTME: Static content only; links point at real routes.
-import { Link } from 'react-router';
+// ABOUTME: Static content only; links point at real routes. Not shown on the seller and admin consoles.
+import { Link, useLocation } from 'react-router';
 
 export function Footer() {
+  const { pathname } = useLocation();
+  if (pathname === '/seller' || pathname === '/admin') return null;
   return (
     <footer className="mt-24 border-t border-linen bg-milk">
       <div className="mx-auto grid max-w-[1440px] gap-8 px-margin py-12 md:grid-cols-3 md:px-16">
