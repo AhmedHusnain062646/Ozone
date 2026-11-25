@@ -4,6 +4,8 @@ import path from 'path';
 import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
+  // API_PROXY_TARGET lets the e2e suite point the dev server at its own API instance.
+  const apiTarget = process.env.API_PROXY_TARGET ?? 'http://localhost:4000';
   return {
     plugins: [react(), tailwindcss()],
     resolve: {
@@ -17,6 +19,10 @@ export default defineConfig(() => {
       hmr: process.env.DISABLE_HMR !== 'true',
       // Disable file watching when DISABLE_HMR is true to save CPU during agent edits.
       watch: process.env.DISABLE_HMR === 'true' ? null : {},
+      proxy: {
+        '/api': { target: apiTarget, changeOrigin: false },
+        '/uploads': { target: apiTarget, changeOrigin: false },
+      },
     },
   };
 });

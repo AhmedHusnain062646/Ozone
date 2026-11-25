@@ -1,49 +1,112 @@
 @import "tailwindcss";
 
+/* Editorial Boutique Luxury tokens (public/assets/aistudio/Image_9_f4cce2df.markdown). */
+@theme {
+  --color-bone: #f5f1e9;
+  --color-milk: #ffffff;
+  --color-linen: #e3ddd0;
+  --color-linen-strong: #c9c1b0;
+  --color-teal: #0e3b3a;
+  --color-teal-hover: #164c4b;
+  --color-gold: #c9a25d;
+  --color-gold-ink: #78591b; /* AA-safe gold for text on bone/milk */
+  --color-gold-wash: rgb(201 162 93 / 0.08);
+  --color-mint: #7fe3c4;
+  --color-ink: #14181a;
+  --color-sage: #5e6663;
+  --color-graphite: #101415;
+  --color-graphite-raised: #181d1f;
+  --color-graphite-line: #2a3235;
+  --color-success: #2a7353;
+  --color-warning: #c58a2b;
+  --color-danger: #b5483c;
+  --color-danger-on-dark: #ff9d8f;
+  --color-info: #3b6a8c;
+
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Bodoni Moda", Georgia, serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* 4px base radius; pills are not part of the system. */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 4px;
+  --radius-lg: 6px;
+  --radius-xl: 6px;
+
+  --shadow-float: 0 8px 32px rgb(20 24 26 / 0.04);
+
+  --text-label: 0.6875rem;
+  --text-label--line-height: 1rem;
+  --tracking-caps: 0.12em;
+
+  --spacing-gutter: 1.5rem;
+  --spacing-margin: 1.25rem;
+
+  --animate-fade-in: fade-in 150ms linear both;
+  --animate-slide-in-right: slide-in-right 300ms cubic-bezier(0.2, 0, 0, 1) both;
+  --animate-rise: rise 250ms cubic-bezier(0.2, 0, 0, 1) both;
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes slide-in-right {
+    from { transform: translateX(24px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+  @keyframes rise {
+    from { transform: translateY(8px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+}
+
 @layer base {
-  :root {
-    --bone-paper: #F5F1E9;
-    --milk: #FFFFFF;
-    --pale-linen: #E3DDD0;
-    --ozone-teal: #0E3B3A;
-    --ozone-teal-hover: #164C4B;
-    --champagne-gold: #C9A25D;
-    --signal-mint: #7FE3C4;
-    --ink: #14181A;
-    --muted-sage: #5E6663;
-    --graphite: #101415;
-  }
-
+  html { color-scheme: light; }
   body {
-    background-color: var(--bone-paper);
-    color: var(--ink);
-    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--color-bone);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 24px;
     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
   }
-
-  h1, h2, h3, .font-editorial {
-    font-family: 'Bodoni Moda', Georgia, serif;
-  }
-
-  .font-mono-tabular {
-    font-family: 'JetBrains Mono', monospace;
-    font-variant-numeric: tabular-nums;
-  }
+  h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 400; letter-spacing: -0.01em; }
+  :focus-visible { outline: 2px solid var(--color-teal); outline-offset: 2px; }
+  .on-graphite :focus-visible { outline-color: var(--color-mint); }
+  img { max-width: 100%; }
 }
 
-/* Custom scrollbars and refined hairline styling */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+@layer utilities {
+  .font-numeric { font-family: var(--font-mono); font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+  .label-caps { font-size: var(--text-label); line-height: 1rem; font-weight: 600; letter-spacing: var(--tracking-caps); text-transform: uppercase; }
 }
-::-webkit-scrollbar-track {
-  background: #F5F1E9;
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
-::-webkit-scrollbar-thumb {
-  background: #D4CDC0;
-  border-radius: 2px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #0E3B3A;
-}
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--color-bone); }
+::-webkit-scrollbar-thumb { background: var(--color-linen-strong); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-teal); }
+
+/* Back-of-house (admin) surface: re-tone the light-theme text utilities that would otherwise fail contrast on graphite.
+   Scoped to non-input elements because form controls keep their own light fill. */
+.on-graphite .text-sage { color: color-mix(in srgb, var(--color-bone) 72%, transparent); }
+.on-graphite .text-success { color: #6fd6a8; }
+.on-graphite .text-info { color: #8fc0e6; }
+.on-graphite .text-danger { color: var(--color-danger-on-dark); }
+.on-graphite .text-\[\#7a5410\] { color: #e8b863; }
+.on-graphite .text-gold-ink { color: #e3c387; }
+.on-graphite button.text-ink { color: var(--color-bone); }
+.on-graphite button.border-linen-strong { border-color: color-mix(in srgb, var(--color-bone) 45%, transparent); }
+.on-graphite button.text-ink:hover:not(:disabled) { background-color: color-mix(in srgb, var(--color-bone) 14%, transparent); }
+/* Form controls (Input/Select) sit on a light fill even inside graphite, so their own error text must stay readable on it. */
+.on-graphite input + p.text-danger, .on-graphite select + p.text-danger { color: var(--color-danger); }
