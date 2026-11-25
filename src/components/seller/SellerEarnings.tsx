@@ -6,6 +6,7 @@ import { dollarsToCents, useRequestPayout, useSellerBalance, useSellerLedger } f
 import { Badge, Button, Card, Input, QueryBoundary, Table, THead, Td, Th, Tr, useToast } from '../ui/index.ts';
 
 const LABEL = { sale_credit: 'Sale', refund_debit: 'Refund', payout_disbursement: 'Payout' } as const;
+const STATUS = { pending: 'Pending', settled: 'Settled', disbursed: 'Disbursed' } as const;
 
 export function SellerEarnings({ canWithdraw }: { canWithdraw: boolean }) {
   const balance = useSellerBalance();
@@ -64,7 +65,7 @@ export function SellerEarnings({ canWithdraw }: { canWithdraw: boolean }) {
                       <Td numeric><span className="font-numeric">{formatMoney(r.grossCents)}</span></Td>
                       <Td numeric><span className="font-numeric">{formatMoney(r.commissionCents)}</span></Td>
                       <Td numeric><span className="font-numeric">{formatMoney(r.netCents)}</span></Td>
-                      <Td><Badge tone={r.status === 'pending' ? 'warning' : r.status === 'disbursed' ? 'neutral' : 'success'}>{r.status}</Badge></Td>
+                      <Td><Badge tone={r.status === 'pending' ? 'warning' : r.status === 'disbursed' ? 'neutral' : 'success'}>{STATUS[r.status]}</Badge></Td>
                     </Tr>
                   ))}
                 </tbody>

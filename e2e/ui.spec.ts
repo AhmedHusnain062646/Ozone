@@ -11,7 +11,8 @@ test('money columns are right-aligned, actions stay on one line, labels are sent
   await page.goto('/seller?tab=orders');
   const buttons = page.getByRole('row').getByRole('button');
   await expect(buttons.first()).toBeVisible();
-  for (const b of await buttons.all()) expect((await b.boundingBox())!.height).toBeLessThan(45);
+  // Height cannot tell a wrapped label apart (two lines still fit the button's minimum height).
+  for (const b of await buttons.all()) await expect(b).toHaveCSS('white-space', 'nowrap');
 });
 
 test('console navigation is links in a sidebar, with no footer', async ({ page }) => {
@@ -143,4 +144,11 @@ test('a focused select shows a ring, not only a border colour change', async ({ 
   const sort = page.getByLabel('Sort');
   await sort.focus();
   await expect(sort).not.toHaveCSS('box-shadow', 'none');
+});
+
+test('ledger statuses are written in sentence case', async ({ page }) => {
+  await signIn(page, ACCOUNTS.vane, '/seller?tab=earnings');
+  const ledger = page.getByRole('region', { name: 'Seller ledger' });
+  await expect(ledger.getByText('Settled', { exact: true }).first()).toBeVisible();
+  await expect(ledger.getByText('settled', { exact: true })).toHaveCount(0);
 });
