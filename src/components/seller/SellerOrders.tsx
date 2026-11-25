@@ -33,7 +33,7 @@ export function SellerOrders() {
         <>
           <Table caption="Parcels to fulfil">
             <THead>
-              <Tr><Th>Parcel</Th><Th>Items</Th><Th>Ship to</Th><Th>You earn</Th><Th>Status</Th><Th><span className="sr-only">Actions</span></Th></Tr>
+              <Tr><Th>Parcel</Th><Th>Items</Th><Th>Ship to</Th><Th numeric>You earn</Th><Th>Status</Th><Th><span className="sr-only">Actions</span></Th></Tr>
             </THead>
             <tbody>
               {list.map((o) => {
@@ -43,7 +43,7 @@ export function SellerOrders() {
                     <Td><span className="font-numeric text-xs">{o.code}</span><br /><span className="text-xs text-sage">{formatDateTime(o.createdAt)}</span></Td>
                     <Td>{o.items.map((i) => <span key={i.sku} className="block">{i.productTitle} <span className="text-sage">· {i.variantName} × {i.quantity}</span></span>)}</Td>
                     <Td>{o.shipTo.fullName}<br /><span className="text-xs text-sage">{o.shipTo.street}, {o.shipTo.city}, {o.shipTo.country}</span></Td>
-                    <Td><span className="font-numeric">{formatMoney(o.netCents)}</span></Td>
+                    <Td numeric><span className="font-numeric">{formatMoney(o.netCents)}</span></Td>
                     <Td>
                       <Badge tone={statusTone(o.status)}>{STATUS_LABEL[o.status]}</Badge>
                       {o.trackingNumber && <span className="mt-1 block text-xs text-sage">Tracking {o.trackingNumber}</span>}

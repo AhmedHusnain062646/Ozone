@@ -46,7 +46,7 @@ You can also register as a buyer, or use **Sell on Ozone** in the sign-in dialog
 
 1. **Two-atelier checkout:** reserve pieces from two ateliers (a 10-minute hold starts), check out with the Sandbox card; the order splits into one parcel per atelier, each with its own commission snapshot.
 2. **Lifecycle:** sign in as an atelier (`/seller`), pack and ship a parcel (tracking number required); as the buyer, request a return; as admin (`/admin`, Returns), approve it. The buyer is refunded, stock returns, and the atelier's ledger gets an exact reversal.
-3. **Governance:** in `/admin` approve or suspend ateliers, change a commission (1% to 50%, applies to new orders only), manage categories, and run the **Concurrency Lab** (N parallel reservation requests with measured timings; it never oversells).
+3. **Admin:** in `/admin` approve or suspend ateliers, change a commission (1% to 50%, applies to new orders only), manage categories, and run the **Concurrency Lab** (N parallel reservation requests with measured timings; it never oversells).
 
 ## Scripts
 

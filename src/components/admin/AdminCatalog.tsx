@@ -1,5 +1,5 @@
 // ABOUTME: Platform default fee (applies to new applicants) and category management (create, rename, delete when unused).
-// ABOUTME: Deleting a category that still has products is refused by the server and shown inline.
+// ABOUTME: Delete is disabled for a category that still has products; the server refuses it as well.
 import { useState, type FormEvent } from 'react';
 import { formatBps } from '../../lib/format.ts';
 import { percentToBps, useAdminCategories, useAdminSettings, useCreateCategory, useDeleteCategory, useRenameCategory, useSetDefaultFee } from '../../lib/admin.ts';
@@ -14,7 +14,7 @@ function DefaultFee() {
   const [error, setError] = useState('');
   return (
     <Card graphite className="min-w-0 p-5">
-      <h2 className="font-display text-xl">Default platform fee</h2>
+      <h3 className="font-sans text-base font-semibold">Default platform fee</h3>
       <p className="mt-1 text-sm text-bone/70">Applied to atelier applications received from now on. Existing ateliers keep their own rate.</p>
       <QueryBoundary query={settings}>
         {(s) => (
@@ -43,13 +43,14 @@ function CategoryRow({ c }: { c: AdminCategory }) {
   return (
     <Tr>
       <Td>
-        <Input label={`Name of ${c.name}`} value={name} onChange={(e) => setName(e.target.value)} error={error || undefined} />
+        <Input label={`Name of ${c.name}`} hideLabel value={name} onChange={(e) => setName(e.target.value)} error={error || undefined} />
       </Td>
-      <Td><span className="font-numeric">{c.productCount}</span></Td>
+      <Td numeric><span className="font-numeric">{c.productCount}</span></Td>
       <Td>
         <div className="flex gap-2">
           <Button size="sm" variant="secondary" disabled={name.trim() === c.name || !name.trim()} loading={rename.isPending} onClick={() => rename.mutate({ id: c.id, name: name.trim() }, { onSuccess: () => toast.success('Category renamed'), onError: (e) => setError(e.message) })}>Rename</Button>
-          <Button size="sm" variant="danger" loading={del.isPending} onClick={() => del.mutate(c.id, { onSuccess: () => toast.success('Category deleted', c.name), onError: (e) => setError(e.message) })}>Delete<span className="sr-only"> {c.name}</span></Button>
+          <Button size="sm" variant="danger" loading={del.isPending} disabled={c.productCount > 0} aria-describedby={c.productCount > 0 ? `in-use-${c.id}` : undefined} onClick={() => del.mutate(c.id, { onSuccess: () => toast.success('Category deleted', c.name), onError: (e) => setError(e.message) })}>Delete<span className="sr-only"> {c.name}</span></Button>
+          {c.productCount > 0 && <span id={`in-use-${c.id}`} className="self-center whitespace-nowrap text-xs text-bone/70">In use</span>}
         </div>
       </Td>
     </Tr>
@@ -66,7 +67,7 @@ export function AdminCatalog() {
     <div className="grid gap-8 lg:grid-cols-[1fr_1.6fr]">
       <DefaultFee />
       <section aria-labelledby="cat-heading" className="min-w-0">
-        <h2 id="cat-heading" className="font-display text-2xl">Categories</h2>
+        <h3 id="cat-heading" className="font-sans text-base font-semibold">Categories</h3>
         <form className="mt-4 flex items-end gap-3" noValidate onSubmit={(e: FormEvent) => {
           e.preventDefault();
           if (!name.trim()) return setError('Required');
@@ -80,7 +81,7 @@ export function AdminCatalog() {
           <QueryBoundary query={categories} isEmpty={(d) => d.length === 0} empty={{ title: 'No categories', message: 'Add one so ateliers can classify their pieces.' }}>
             {(list) => (
               <Table graphite caption="Categories">
-                <THead graphite><Tr><Th>Name</Th><Th>Pieces</Th><Th><span className="sr-only">Actions</span></Th></Tr></THead>
+                <THead graphite><Tr><Th>Name</Th><Th numeric>Pieces</Th><Th><span className="sr-only">Actions</span></Th></Tr></THead>
                 <tbody>{list.map((c) => <CategoryRow key={`${c.id}-${c.name}`} c={c} />)}</tbody>
               </Table>
             )}

@@ -22,10 +22,11 @@ export const Tr = ({ className, ...rest }: HTMLAttributes<HTMLTableRowElement>) 
   <tr className={cx('border-b border-linen/70 last:border-0 [.on-graphite_&]:border-graphite-line', className)} {...rest} />
 );
 
-export const Th = ({ className, scope = 'col', ...rest }: ThHTMLAttributes<HTMLTableCellElement>) => (
-  <th scope={scope} className={cx('label-caps px-4 py-3 font-semibold', className)} {...rest} />
+// `numeric` right-aligns money and count columns; set it on both the header and its cells.
+export const Th = ({ className, scope = 'col', numeric, ...rest }: ThHTMLAttributes<HTMLTableCellElement> & { numeric?: boolean }) => (
+  <th scope={scope} className={cx('label-caps px-4 py-2.5 font-semibold', numeric && 'text-right', className)} {...rest} />
 );
 
-export const Td = ({ className, ...rest }: TdHTMLAttributes<HTMLTableCellElement>) => (
-  <td className={cx('px-4 py-3 align-top', className)} {...rest} />
+export const Td = ({ className, numeric, ...rest }: TdHTMLAttributes<HTMLTableCellElement> & { numeric?: boolean }) => (
+  <td className={cx('px-4 py-2.5 align-top', numeric && 'text-right', className)} {...rest} />
 );
