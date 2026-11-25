@@ -119,3 +119,12 @@ Honest notes:
 - One earlier full e2e run (right after the CSS/a11y changes) had 4 failures (cart race, catalog modal, lifecycle cancel, quality cart) with timeouts and the whole run took 4.8 min; those specs passed when rerun alone (14/14) and two later full runs passed 34/34 (3.3 min). I did not identify the cause (machine load is my guess, not verified).
 - `npm run dev` binds Vite to port 3000 as the prototype did; on this machine another process shadows that port (see DECISIONS), so I verified the dev stack on a free port instead of killing it.
 - Known limitations: payments are simulated; the lab exercises the DB stock guard directly (not HTTP carts); uploads use local disk (the `ImageStorage` interface is the seam for S3); rate limiting is in-memory (single process); `src/types/marketplace.ts` is unused and awaiting your OK to delete.
+
+## Clean-from-scratch re-check (2026-11-25)
+The M10 clean-clone entry above reused the running Postgres container, used `npm ci`, and did not run `docker compose up -d` from the clone; this closes that gap.
+- Fresh `git clone` of 3442667, separate Compose project `ozoneclean` with an empty volume. `npm install` exit 0.
+- DEFECT FOUND: `docker compose up -d db` followed immediately by `npm run db:migrate` failed (ECONNRESET, exit 1) because Postgres was still initialising. README now uses `docker compose up -d --wait db`; three further empty-volume cycles: up/migrate/seed all exit 0.
+- From the clone: lint 0, `npm test` 147/147, build 0, `npm run test:e2e` 34 passed, exit 0.
+- `npm run dev` started API (:4000) and Vite (:3000); served the app, `/api/health` and sign-in (200) through the proxy via the LAN address. On this machine `localhost:3000` still reaches `gowa`, not Ozone.
+- README also gained `npx playwright install chromium` (not exercised: the browser was already installed on this machine).
+- Cleanup: removed only the `ozoneclean` container, network and volume and the scratch clone. The pre-existing `ozone-main-db-1` was already stopped and was not touched.

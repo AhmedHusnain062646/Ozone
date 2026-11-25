@@ -19,7 +19,7 @@ cp .env.example .env
 # put a real secret in SESSION_SECRET and a password in SEED_USER_PASSWORD:
 node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 
-docker compose up -d db          # Postgres 16 on localhost:5433 (creates ozone_dev and ozone_test)
+docker compose up -d --wait db   # Postgres 16 on localhost:5433 (creates ozone_dev and ozone_test); waits until it accepts connections
 npm run db:migrate               # apply SQL migrations to ozone_dev
 npm run db:seed                  # demo catalogue, accounts, orders and ledger
 npm run dev                      # API on :4000, web on :3000
@@ -60,6 +60,8 @@ You can also register as a buyer, or use **Sell on Ozone** in the sign-in dialog
 | `npm run test:e2e` | Playwright against its own API (:4100) and Vite (:3100) on `ozone_test`; reseeds it first |
 | `npm run db:generate` / `db:migrate` / `db:seed` | Drizzle migration tooling and the seed (`-- --reset` wipes and reseeds a `_dev`/`_test` database) |
 
+Before the first browser run, install the Playwright browser once: `npx playwright install chromium`.
+
 `npm test` and `npm run test:e2e` share the `ozone_test` database: run them one after the other, not at the same time. Seeding refuses any database whose name does not end in `_dev` or `_test`.
 
 ## Rules the code enforces
@@ -85,4 +87,4 @@ docs/       PLAN.md, PROGRESS.md (evidence log), DECISIONS.md
 
 - **Port 3000 is busy:** another process listening on `localhost:3000` can shadow Vite even though Vite reports 3000 (the more specific address wins). Run the two halves yourself on a free port: `npx tsx watch server/index.ts` and `npx vite --port 3001`. Playwright never uses 3000/4000.
 - **`Missing required environment variable ...`:** copy `.env.example` to `.env` and fill it in.
-- **Cannot connect to Postgres:** `docker compose up -d db` and check `docker compose ps`; the database listens on host port 5433.
+- **Cannot connect to Postgres:** `docker compose up -d --wait db` and check `docker compose ps`; the database listens on host port 5433.
