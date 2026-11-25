@@ -126,7 +126,8 @@ export function ProductEditor({ product, onClose }: { product: SellerProduct | n
     <Modal open onClose={onClose} title={product ? `Edit ${product.title}` : 'New piece'} size="lg">
       <form onSubmit={submit} noValidate className="grid gap-4 sm:grid-cols-2">
         <Input className="sm:col-span-2" label="Title" name="title" defaultValue={product?.title} error={errors.title} required />
-        <Select label="Category" name="categoryId" defaultValue={product?.categoryId ?? ''} error={errors.categoryId} options={[{ value: '', label: 'Choose…' }, ...cats.map((c) => ({ value: c.id, label: c.name }))]} />
+        {/* defaultValue applies only on mount, so remount once the categories arrive. */}
+        <Select key={cats.length} label="Category" name="categoryId" defaultValue={product?.categoryId ?? ''} error={errors.categoryId} options={[{ value: '', label: 'Choose…' }, ...cats.map((c) => ({ value: c.id, label: c.name }))]} />
         <Input label="Base price (USD)" name="price" inputMode="decimal" defaultValue={product ? centsToDollars(product.basePriceCents) : ''} error={errors.price} required />
         <Input className="sm:col-span-2" label="Short description" name="shortDescription" defaultValue={product?.shortDescription} maxLength={240} />
         <Input className="sm:col-span-2" label="Description" name="description" defaultValue={product?.description} />

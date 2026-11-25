@@ -152,3 +152,11 @@ test('ledger statuses are written in sentence case', async ({ page }) => {
   await expect(ledger.getByText('Settled', { exact: true }).first()).toBeVisible();
   await expect(ledger.getByText('settled', { exact: true })).toHaveCount(0);
 });
+
+test('editing a piece keeps its category selected', async ({ page }) => {
+  await signIn(page, ACCOUNTS.vane, '/seller?tab=products');
+  await page.getByRole('row', { name: /Monolithic Travertine Vessel/ }).getByRole('button', { name: /^Edit/ }).click();
+  const category = page.getByRole('dialog').getByLabel('Category');
+  await expect(category.locator('option')).not.toHaveCount(1); // the list has arrived
+  await expect(category.locator('option:checked')).toHaveText('Interiors');
+});
