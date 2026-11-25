@@ -7,10 +7,11 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
   hint?: string;
   error?: string;
+  hideLabel?: boolean;
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
-  { label, hint, error, id, className, ...rest },
+  { label, hint, error, hideLabel, id, className, ...rest },
   ref,
 ) {
   const auto = useId();
@@ -18,7 +19,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
   const describedBy = [hint && `${inputId}-hint`, error && `${inputId}-err`].filter(Boolean).join(' ') || undefined;
   return (
     <div className={className}>
-      <label htmlFor={inputId} className="label-caps mb-1 block text-sage">
+      <label htmlFor={inputId} className={cx('label-caps mb-1 block text-sage', hideLabel && 'sr-only')}>
         {label}
       </label>
       <input

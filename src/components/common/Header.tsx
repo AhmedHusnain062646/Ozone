@@ -12,7 +12,7 @@ function linksFor(user: SessionUser | null | undefined) {
   const links = [{ to: '/', label: 'Collection', end: true }];
   if (user?.role === 'buyer') links.push({ to: '/wishlist', label: 'Wishlist', end: false }, { to: '/orders', label: 'Orders', end: false });
   if (user?.role === 'seller') links.push({ to: '/seller', label: 'Atelier console', end: false });
-  if (user?.role === 'admin') links.push({ to: '/admin', label: 'Governance', end: false });
+  if (user?.role === 'admin') links.push({ to: '/admin', label: 'Admin', end: false });
   return links;
 }
 

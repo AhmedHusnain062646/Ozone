@@ -25,7 +25,7 @@ export function SellerProducts({ canPublish }: { canPublish: boolean }) {
       <QueryBoundary query={products} isEmpty={(d) => d.length === 0} empty={{ title: 'No pieces yet', message: 'Create your first piece as a draft, add editions and photos, then publish it.', action: <Button onClick={() => setEditing('new')}>Create a piece</Button> }}>
         {(list) => (
           <Table caption="Your pieces">
-            <THead><Tr><Th>Piece</Th><Th>Price</Th><Th>Stock</Th><Th>Visibility</Th><Th><span className="sr-only">Actions</span></Th></Tr></THead>
+            <THead><Tr><Th>Piece</Th><Th numeric>Price</Th><Th numeric>Stock</Th><Th>Visibility</Th><Th><span className="sr-only">Actions</span></Th></Tr></THead>
             <tbody>
               {list.map((p) => (
                 <Tr key={p.id}>
@@ -35,8 +35,8 @@ export function SellerProducts({ canPublish }: { canPublish: boolean }) {
                       <span>{p.title}<br /><span className="text-xs text-sage">{p.variants.length} {p.variants.length === 1 ? 'edition' : 'editions'}</span></span>
                     </div>
                   </Td>
-                  <Td><span className="font-numeric">{formatMoney(p.basePriceCents)}</span></Td>
-                  <Td><span className="font-numeric">{p.variants.reduce((n, v) => n + v.stock, 0)}</span></Td>
+                  <Td numeric><span className="font-numeric">{formatMoney(p.basePriceCents)}</span></Td>
+                  <Td numeric><span className="font-numeric">{p.variants.reduce((n, v) => n + v.stock, 0)}</span></Td>
                   <Td><Badge tone={p.isPublished ? 'success' : 'neutral'}>{p.isPublished ? 'Published' : 'Draft'}</Badge></Td>
                   <Td>
                     <div className="flex gap-2">

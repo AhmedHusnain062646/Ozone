@@ -5,6 +5,7 @@ import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { Outlet, useSearchParams } from 'react-router';
 import hero from '../../assets/images/ozone_hero_luxury_living_1794146207794.jpg';
 import { api } from '../../lib/api.ts';
+import { cx } from '../../lib/cx.ts';
 import type { CatalogSort } from '../../lib/types.ts';
 import { Button, EmptyState, Input, QueryBoundary, Select, Skeleton } from '../ui/index.ts';
 import { ProductCard } from './ProductCard.tsx';
@@ -28,6 +29,7 @@ export function Storefront() {
   const maxPrice = params.get('maxPrice') ? Number(params.get('maxPrice')) : undefined;
   const page = Math.max(1, Number(params.get('page') ?? 1) || 1);
 
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [searchText, setSearchText] = useState(q);
   useEffect(() => setSearchText(q), [q]);
 
@@ -54,56 +56,64 @@ export function Storefront() {
     update({ q: searchText.trim() || undefined });
   };
   const filtersActive = !!(q || category || minPrice !== undefined || maxPrice !== undefined);
+  // What the collapsed phone panel is hiding; search stays visible so it is not counted.
+  const panelCount = [category, sort !== 'newest', minPrice !== undefined, maxPrice !== undefined].filter(Boolean).length;
 
   return (
     <>
       <section className="relative isolate overflow-hidden bg-graphite">
         <img src={hero} alt="" className="absolute inset-0 -z-10 h-full w-full object-cover opacity-60" />
-        <div className="mx-auto max-w-[1440px] px-margin py-20 text-bone md:px-16 md:py-32">
-          <p className="label-caps text-mint">Independent ateliers · Limited editions</p>
-          <h1 className="mt-4 max-w-3xl font-display text-[38px] leading-[44px] md:text-[64px] md:leading-[72px]">
+        <div className="mx-auto max-w-[1440px] px-margin py-10 text-bone md:px-16 md:py-14">
+          <h1 className="max-w-3xl font-display text-[30px] leading-9 md:text-[44px] md:leading-[52px]">
             Objects made slowly, by hands you can name.
           </h1>
         </div>
       </section>
 
-      <section aria-labelledby="collection-heading" className="mx-auto max-w-[1440px] px-margin py-12 md:px-16">
+      <section aria-labelledby="collection-heading" className="mx-auto max-w-[1440px] px-margin py-8 md:px-16">
         <h2 id="collection-heading" className="font-display text-[28px] leading-9 md:text-[40px] md:leading-[48px]">
           The collection
         </h2>
 
         <form role="search" onSubmit={onSearch} className="mt-8 grid gap-4 md:grid-cols-[2fr_1fr_1fr_auto_auto] md:items-end">
           <Input label="Search" type="search" value={searchText} onChange={(e) => setSearchText(e.target.value)} placeholder="Travertine, bronze, linen…" />
-          <Select
-            label="Category"
-            value={category}
-            onChange={(e) => update({ category: e.target.value || undefined })}
-            options={[{ value: '', label: 'All works' }, ...(categories.data ?? []).map((c) => ({ value: c.slug, label: `${c.name} (${c.productCount})` }))]}
-          />
-          <Select label="Sort" value={sort} onChange={(e) => update({ sort: e.target.value === 'newest' ? undefined : e.target.value })} options={SORTS} />
-          <Input
-            label="Min price ($)"
-            inputMode="numeric"
-            defaultValue={minPrice !== undefined ? String(minPrice / 100) : ''}
-            key={`min-${minPrice}`}
-            onBlur={(e) => {
-              const c = toCents(e.target.value);
-              if (c !== minPrice) update({ minPrice: c === undefined ? undefined : String(c) });
-            }}
-            className="md:w-32"
-          />
-          <Input
-            label="Max price ($)"
-            inputMode="numeric"
-            defaultValue={maxPrice !== undefined ? String(maxPrice / 100) : ''}
-            key={`max-${maxPrice}`}
-            onBlur={(e) => {
-              const c = toCents(e.target.value);
-              if (c !== maxPrice) update({ maxPrice: c === undefined ? undefined : String(c) });
-            }}
-            className="md:w-32"
-          />
-          <Button type="submit" className="md:hidden">Search</Button>
+          <div className="grid grid-cols-2 gap-4 md:hidden">
+            <Button variant="secondary" aria-expanded={filtersOpen} aria-controls="catalog-filters" onClick={() => setFiltersOpen((open) => !open)}>
+              {panelCount ? `Filters (${panelCount})` : 'Filters'}
+            </Button>
+            <Button type="submit">Search</Button>
+          </div>
+          <div id="catalog-filters" className={cx(filtersOpen ? 'grid gap-4' : 'hidden', 'md:contents')}>
+            <Select
+              label="Category"
+              value={category}
+              onChange={(e) => update({ category: e.target.value || undefined })}
+              options={[{ value: '', label: 'All works' }, ...(categories.data ?? []).map((c) => ({ value: c.slug, label: `${c.name} (${c.productCount})` }))]}
+            />
+            <Select label="Sort" value={sort} onChange={(e) => update({ sort: e.target.value === 'newest' ? undefined : e.target.value })} options={SORTS} />
+            <Input
+              label="Min price ($)"
+              inputMode="numeric"
+              defaultValue={minPrice !== undefined ? String(minPrice / 100) : ''}
+              key={`min-${minPrice}`}
+              onBlur={(e) => {
+                const c = toCents(e.target.value);
+                if (c !== minPrice) update({ minPrice: c === undefined ? undefined : String(c) });
+              }}
+              className="md:w-32"
+            />
+            <Input
+              label="Max price ($)"
+              inputMode="numeric"
+              defaultValue={maxPrice !== undefined ? String(maxPrice / 100) : ''}
+              key={`max-${maxPrice}`}
+              onBlur={(e) => {
+                const c = toCents(e.target.value);
+                if (c !== maxPrice) update({ maxPrice: c === undefined ? undefined : String(c) });
+              }}
+              className="md:w-32"
+            />
+          </div>
         </form>
 
         <div className="mt-8" aria-live="polite">

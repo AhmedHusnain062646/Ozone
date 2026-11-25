@@ -17,7 +17,7 @@ export function AdminReturns() {
     <QueryBoundary query={returns} isEmpty={(d) => d.length === 0} empty={{ title: 'No returns waiting', message: 'Return requests from buyers land here for a decision.' }}>
       {(list) => (
         <Table graphite caption="Return requests">
-          <THead graphite><Tr><Th>Parcel</Th><Th>Atelier</Th><Th>Buyer</Th><Th>Reason</Th><Th>Refund</Th><Th><span className="sr-only">Decision</span></Th></Tr></THead>
+          <THead graphite><Tr><Th>Parcel</Th><Th>Atelier</Th><Th>Buyer</Th><Th>Reason</Th><Th numeric>Refund</Th><Th><span className="sr-only">Decision</span></Th></Tr></THead>
           <tbody>
             {list.map((r) => (
               <Tr key={r.id}>
@@ -25,7 +25,7 @@ export function AdminReturns() {
                 <Td>{r.seller}</Td>
                 <Td>{r.buyer.name}<br /><span className="text-xs text-bone/70">{r.buyer.email}</span></Td>
                 <Td>{r.returnReason}</Td>
-                <Td><span className="font-numeric">{formatMoney(r.subtotalCents)}</span><br /><span className="text-xs text-bone/70">atelier loses {formatMoney(r.netCents)}</span></Td>
+                <Td numeric><span className="font-numeric">{formatMoney(r.subtotalCents)}</span><br /><span className="text-xs text-bone/70">atelier loses {formatMoney(r.netCents)}</span></Td>
                 <Td>
                   <div className="flex gap-2">
                     <Button size="sm" loading={decide.isPending && decide.variables?.code === r.code} onClick={() => run(r.code, 'approve')}>Approve<span className="sr-only"> return {r.code}</span></Button>

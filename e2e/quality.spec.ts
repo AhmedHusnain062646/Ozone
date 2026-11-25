@@ -84,20 +84,20 @@ test.describe('buyer screens', () => {
 });
 
 test.describe('console screens', () => {
-  test('seller console tabs', async ({ page }) => {
+  test('seller console sections', async ({ page }) => {
     await signIn(page, ACCOUNTS.vane, '/seller');
     for (const tab of ['Overview', 'Products', 'Orders', 'Earnings']) {
-      await page.getByRole('tab', { name: tab }).click();
-      await expect(page.getByRole('tabpanel')).toBeVisible();
+      await page.getByRole('navigation', { name: 'Console' }).getByRole('link', { name: new RegExp(`^${tab}`) }).click();
+      await expect(page.getByRole('heading', { level: 2, name: tab })).toBeVisible();
       await audit(page, `seller ${tab}`);
     }
   });
 
-  test('admin console tabs and lab', async ({ page }) => {
+  test('admin console sections and lab', async ({ page }) => {
     await signIn(page, ACCOUNTS.admin, '/admin');
     for (const tab of ['Overview', 'Ateliers', 'Catalogue & fees', 'Returns']) {
-      await page.getByRole('tab', { name: tab }).click();
-      await expect(page.getByRole('tabpanel')).toBeVisible();
+      await page.getByRole('navigation', { name: 'Console' }).getByRole('link', { name: new RegExp(`^${tab}`) }).click();
+      await expect(page.getByRole('heading', { level: 2, name: tab })).toBeVisible();
       await audit(page, `admin ${tab}`);
     }
     await page.getByRole('button', { name: 'Concurrency Lab' }).click();

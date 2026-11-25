@@ -8,7 +8,7 @@ export interface TabItem {
   label: string;
 }
 
-export function Tabs({ tabs, value, onChange, idPrefix, graphite }: { tabs: TabItem[]; value: string; onChange: (id: string) => void; idPrefix: string; graphite?: boolean }) {
+export function Tabs({ tabs, value, onChange, idPrefix }: { tabs: TabItem[]; value: string; onChange: (id: string) => void; idPrefix: string }) {
   const refs = useRef<Array<HTMLButtonElement | null>>([]);
   const move = (index: number) => {
     const next = (index + tabs.length) % tabs.length;
@@ -16,7 +16,7 @@ export function Tabs({ tabs, value, onChange, idPrefix, graphite }: { tabs: TabI
     refs.current[next]?.focus();
   };
   return (
-    <div role="tablist" aria-orientation="horizontal" className={cx('relative flex gap-1 overflow-x-auto border-b', graphite ? 'border-graphite-line' : 'border-linen')}>
+    <div role="tablist" aria-orientation="horizontal" className="relative flex gap-1 overflow-x-auto border-b border-linen">
       {tabs.map((t, i) => {
         const selected = t.id === value;
         return (
@@ -40,7 +40,7 @@ export function Tabs({ tabs, value, onChange, idPrefix, graphite }: { tabs: TabI
             }}
             className={cx(
               'label-caps min-h-11 shrink-0 border-b-2 px-4 py-2 transition-colors',
-              selected ? (graphite ? 'border-mint text-mint' : 'border-teal text-teal') : (graphite ? 'border-transparent text-sage hover:text-bone' : 'border-transparent text-sage hover:text-ink'),
+              selected ? 'border-teal text-teal' : 'border-transparent text-sage hover:text-ink',
             )}
           >
             {t.label}

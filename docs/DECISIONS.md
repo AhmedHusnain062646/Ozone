@@ -78,3 +78,9 @@
 - Route-level code splitting with react-router `lazy` for checkout, orders, seller, admin and wishlist; `e2e/lazy.spec.ts` asserts the storefront downloads none of them. The Concurrency Lab ships with the admin chunk.
 - Removed unused dependencies (`@google/genai`, `motion`, `autoprefixer`, `esbuild`), the unused `src/types/marketplace.ts`, `useClearCart`/`api.cart.clear` and `wishlistIds`. `DELETE /api/cart` stays.
 - Hero JPEG re-encoded at quality 72 (same 1376x768): 701 kB to 193 kB.
+
+## UI refresh (2026-11-25)
+- Seller and admin consoles share `components/common/ConsoleShell.tsx`: sections are `?tab=` links in a sidebar, not a tab widget; the site footer is hidden on both. The link row must stay `relative`, or the visually hidden " waiting" text widens the page on phones.
+- `.label-caps` keeps its name but is sentence case; renaming would have touched every screen for no behaviour.
+- `body` hides horizontal overflow, so `scrollWidth` checks can pass while text is clipped. `e2e/ui.spec.ts` measures the element itself where that matters.
+- Suspending an atelier asks for confirmation. Delete is disabled for a category in use (the server already refuses it).

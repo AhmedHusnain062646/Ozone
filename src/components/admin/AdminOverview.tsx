@@ -1,16 +1,24 @@
 // ABOUTME: Admin overview: GMV, commission, order and atelier counts from the ledger, a 14-day sales chart and top ateliers.
 // ABOUTME: Figures are ledger-derived (net of refunds), so a cancelled or refunded parcel never inflates them.
+import { Link } from 'react-router';
+import { cx } from '../../lib/cx.ts';
 import { formatMoney } from '../../lib/format.ts';
 import { useAnalytics } from '../../lib/admin.ts';
 import { STATUS_LABEL } from '../../lib/status.ts';
 import type { OrderStatus } from '../../lib/types.ts';
 import { Card, QueryBoundary, Table, THead, Td, Th, Tr } from '../ui/index.ts';
 
-function Stat({ label, value }: { label: string; value: string }) {
+// A stat with a link is one to act on, so it is shown larger.
+function Stat({ label, value, link }: { label: string; value: string; link?: { tab: string; text: string } }) {
   return (
-    <Card graphite className="p-5">
+    <Card graphite className={cx('p-5', link && 'xl:col-span-2')}>
       <dt className="label-caps text-bone/70">{label}</dt>
-      <dd className="font-numeric mt-2 text-[28px] leading-9">{value}</dd>
+      <dd className={cx('font-numeric mt-2', link ? 'text-[32px] leading-10' : 'text-xl')}>{value}</dd>
+      {link && (
+        <dd className="mt-2">
+          <Link to={`?tab=${link.tab}`} replace className="font-medium text-mint underline underline-offset-4">{link.text}</Link>
+        </dd>
+      )}
     </Card>
   );
 }
@@ -24,6 +32,8 @@ export function AdminOverview() {
         return (
           <div className="space-y-8">
             <dl className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              <Stat label="Pending applications" value={String(d.sellersByStatus.pending_approval ?? 0)} link={{ tab: 'sellers', text: 'Review applications' }} />
+              <Stat label="Open returns" value={String(d.subOrdersByStatus.RETURN_REQUESTED ?? 0)} link={{ tab: 'returns', text: 'Review returns' }} />
               <Stat label="Gross merchandise value" value={formatMoney(d.grossCents)} />
               <Stat label="Platform commission" value={formatMoney(d.commissionCents)} />
               <Stat label="Paid to ateliers (net)" value={formatMoney(d.netToSellersCents)} />
@@ -31,7 +41,7 @@ export function AdminOverview() {
             </dl>
 
             <section aria-labelledby="daily-heading">
-              <h2 id="daily-heading" className="font-display text-2xl">Last 14 days</h2>
+              <h3 id="daily-heading" className="font-sans text-base font-semibold">Last 14 days</h3>
               {d.daily.length === 0 ? (
                 <p className="mt-3 text-sm text-bone/70">No sales in the last 14 days.</p>
               ) : (
@@ -48,13 +58,13 @@ export function AdminOverview() {
 
             <div className="grid gap-8 lg:grid-cols-2">
               <section aria-labelledby="top-heading" className="min-w-0">
-                <h2 id="top-heading" className="font-display text-2xl">Top ateliers</h2>
+                <h3 id="top-heading" className="font-sans text-base font-semibold">Top ateliers</h3>
                 <div className="mt-3">
-                  <Table graphite caption="Top ateliers by gross sales">
-                    <THead graphite><Tr><Th>Atelier</Th><Th>Gross</Th><Th>Commission</Th></Tr></THead>
+                  <Table graphite caption="Top ateliers by gross sales" className="[&>table]:min-w-[20rem]">
+                    <THead graphite><Tr><Th>Atelier</Th><Th numeric>Gross</Th><Th numeric>Commission</Th></Tr></THead>
                     <tbody>
                       {d.topSellers.map((s) => (
-                        <Tr key={s.sellerId}><Td>{s.name}</Td><Td><span className="font-numeric">{formatMoney(s.grossCents)}</span></Td><Td><span className="font-numeric">{formatMoney(s.commissionCents)}</span></Td></Tr>
+                        <Tr key={s.sellerId}><Td>{s.name}</Td><Td numeric><span className="font-numeric">{formatMoney(s.grossCents)}</span></Td><Td numeric><span className="font-numeric">{formatMoney(s.commissionCents)}</span></Td></Tr>
                       ))}
                       {d.topSellers.length === 0 && <Tr><Td colSpan={3}>No sales yet.</Td></Tr>}
                     </tbody>
@@ -62,7 +72,7 @@ export function AdminOverview() {
                 </div>
               </section>
               <section aria-labelledby="status-heading" className="min-w-0">
-                <h2 id="status-heading" className="font-display text-2xl">Parcels by status</h2>
+                <h3 id="status-heading" className="font-sans text-base font-semibold">Parcels by status</h3>
                 <ul className="mt-3 divide-y divide-graphite-line border border-graphite-line">
                   {(Object.entries(d.subOrdersByStatus) as [OrderStatus, number][]).map(([st, n]) => (
                     <li key={st} className="flex justify-between px-4 py-2 text-sm"><span>{STATUS_LABEL[st]}</span><span className="font-numeric">{n}</span></li>

@@ -25,7 +25,7 @@ test('an applicant sees the pending banner, drafts a piece with a photo, and can
   await expect(page.getByText('Awaiting approval').first()).toBeVisible();
   await expect(page.getByText('an Ozone admin must activate you', { exact: false })).toBeVisible();
 
-  await page.getByRole('tab', { name: 'Products' }).click();
+  await page.getByRole('navigation', { name: 'Console' }).getByRole('link', { name: /^Products/ }).click();
   await expect(page.getByText('No pieces yet')).toBeVisible();
   await page.getByRole('button', { name: 'Create a piece' }).click();
   const editor = page.getByRole('dialog', { name: 'New piece' });
