@@ -45,7 +45,7 @@ function CategoryRow({ c }: { c: AdminCategory }) {
       <Td>
         <Input label={`Name of ${c.name}`} value={name} onChange={(e) => setName(e.target.value)} error={error || undefined} />
       </Td>
-      <Td><span className="font-numeric">{c.productCount}</span></Td>
+      <Td numeric><span className="font-numeric">{c.productCount}</span></Td>
       <Td>
         <div className="flex gap-2">
           <Button size="sm" variant="secondary" disabled={name.trim() === c.name || !name.trim()} loading={rename.isPending} onClick={() => rename.mutate({ id: c.id, name: name.trim() }, { onSuccess: () => toast.success('Category renamed'), onError: (e) => setError(e.message) })}>Rename</Button>
@@ -80,7 +80,7 @@ export function AdminCatalog() {
           <QueryBoundary query={categories} isEmpty={(d) => d.length === 0} empty={{ title: 'No categories', message: 'Add one so ateliers can classify their pieces.' }}>
             {(list) => (
               <Table graphite caption="Categories">
-                <THead graphite><Tr><Th>Name</Th><Th>Pieces</Th><Th><span className="sr-only">Actions</span></Th></Tr></THead>
+                <THead graphite><Tr><Th>Name</Th><Th numeric>Pieces</Th><Th><span className="sr-only">Actions</span></Th></Tr></THead>
                 <tbody>{list.map((c) => <CategoryRow key={`${c.id}-${c.name}`} c={c} />)}</tbody>
               </Table>
             )}

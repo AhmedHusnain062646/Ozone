@@ -54,16 +54,16 @@ export function SellerEarnings({ canWithdraw }: { canWithdraw: boolean }) {
           <QueryBoundary query={ledger} isEmpty={(d) => d.entries.length === 0} empty={{ title: 'No ledger entries yet', message: 'Sales, refunds and payouts are recorded here and never edited.' }}>
             {(d) => (
               <Table caption="Seller ledger">
-                <THead><Tr><Th>Date</Th><Th>Type</Th><Th>Order</Th><Th>Gross</Th><Th>Commission</Th><Th>Net</Th><Th>Status</Th></Tr></THead>
+                <THead><Tr><Th>Date</Th><Th>Type</Th><Th>Order</Th><Th numeric>Gross</Th><Th numeric>Commission</Th><Th numeric>Net</Th><Th>Status</Th></Tr></THead>
                 <tbody>
                   {d.entries.map((r) => (
                     <Tr key={r.id}>
                       <Td>{formatDateTime(r.createdAt)}</Td>
                       <Td>{LABEL[r.type]}</Td>
                       <Td><span className="font-numeric text-xs">{r.orderCode ?? '—'}</span></Td>
-                      <Td><span className="font-numeric">{formatMoney(r.grossCents)}</span></Td>
-                      <Td><span className="font-numeric">{formatMoney(r.commissionCents)}</span></Td>
-                      <Td><span className="font-numeric">{formatMoney(r.netCents)}</span></Td>
+                      <Td numeric><span className="font-numeric">{formatMoney(r.grossCents)}</span></Td>
+                      <Td numeric><span className="font-numeric">{formatMoney(r.commissionCents)}</span></Td>
+                      <Td numeric><span className="font-numeric">{formatMoney(r.netCents)}</span></Td>
                       <Td><Badge tone={r.status === 'pending' ? 'warning' : r.status === 'disbursed' ? 'neutral' : 'success'}>{r.status}</Badge></Td>
                     </Tr>
                   ))}

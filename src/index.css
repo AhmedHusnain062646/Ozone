@@ -36,10 +36,6 @@
 
   --shadow-float: 0 8px 32px rgb(20 24 26 / 0.04);
 
-  --text-label: 0.6875rem;
-  --text-label--line-height: 1rem;
-  --tracking-caps: 0.12em;
-
   --spacing-gutter: 1.5rem;
   --spacing-margin: 1.25rem;
 
@@ -80,7 +76,7 @@
 
 @layer utilities {
   .font-numeric { font-family: var(--font-mono); font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
-  .label-caps { font-size: var(--text-label); line-height: 1rem; font-weight: 600; letter-spacing: var(--tracking-caps); text-transform: uppercase; }
+  .label-caps { font-size: 0.8125rem; line-height: 1.125rem; font-weight: 600; }
 }
 
 @media (prefers-reduced-motion: reduce) {

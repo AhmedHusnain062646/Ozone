@@ -13,7 +13,7 @@ const variants: Record<Variant, string> = {
   danger: 'bg-danger text-milk border border-danger hover:brightness-95',
   text: 'bg-transparent text-teal border border-transparent label-caps hover:underline underline-offset-4 px-0',
 };
-const sizes: Record<Size, string> = { md: 'min-h-12 px-6 text-sm', sm: 'min-h-9 px-3 text-xs' };
+const sizes: Record<Size, string> = { md: 'min-h-12 px-6 text-sm', sm: 'min-h-9 whitespace-nowrap px-3 text-xs' };
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: Variant;

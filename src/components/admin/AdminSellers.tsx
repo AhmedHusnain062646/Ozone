@@ -36,14 +36,14 @@ export function AdminSellers() {
     <QueryBoundary query={sellers} isEmpty={(d) => d.length === 0} empty={{ title: 'No ateliers yet', message: 'Applications from “Sell on Ozone” appear here for approval.' }}>
       {(list) => (
         <Table graphite caption="Ateliers">
-          <THead graphite><Tr><Th>Atelier</Th><Th>Owner</Th><Th>Status</Th><Th>Pieces</Th><Th>Commission</Th><Th><span className="sr-only">Actions</span></Th></Tr></THead>
+          <THead graphite><Tr><Th>Atelier</Th><Th>Owner</Th><Th>Status</Th><Th numeric>Pieces</Th><Th>Commission</Th><Th><span className="sr-only">Actions</span></Th></Tr></THead>
           <tbody>
             {list.map((s) => (
               <Tr key={s.id}>
                 <Td>{s.name}<br /><span className="text-xs text-bone/70">{s.location}</span></Td>
                 <Td><span className="text-xs">{s.email}</span></Td>
                 <Td><Badge tone={s.status === 'active' ? 'success' : s.status === 'suspended' ? 'danger' : 'warning'}>{s.status === 'pending_approval' ? 'Pending' : s.status === 'active' ? 'Active' : 'Suspended'}</Badge></Td>
-                <Td><span className="font-numeric">{s.productCount}</span></Td>
+                <Td numeric><span className="font-numeric">{s.productCount}</span></Td>
                 <Td><FeeEditor seller={s} /></Td>
                 <Td>
                   <div className="flex gap-2">

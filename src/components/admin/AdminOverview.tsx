@@ -51,10 +51,10 @@ export function AdminOverview() {
                 <h2 id="top-heading" className="font-display text-2xl">Top ateliers</h2>
                 <div className="mt-3">
                   <Table graphite caption="Top ateliers by gross sales">
-                    <THead graphite><Tr><Th>Atelier</Th><Th>Gross</Th><Th>Commission</Th></Tr></THead>
+                    <THead graphite><Tr><Th>Atelier</Th><Th numeric>Gross</Th><Th numeric>Commission</Th></Tr></THead>
                     <tbody>
                       {d.topSellers.map((s) => (
-                        <Tr key={s.sellerId}><Td>{s.name}</Td><Td><span className="font-numeric">{formatMoney(s.grossCents)}</span></Td><Td><span className="font-numeric">{formatMoney(s.commissionCents)}</span></Td></Tr>
+                        <Tr key={s.sellerId}><Td>{s.name}</Td><Td numeric><span className="font-numeric">{formatMoney(s.grossCents)}</span></Td><Td numeric><span className="font-numeric">{formatMoney(s.commissionCents)}</span></Td></Tr>
                       ))}
                       {d.topSellers.length === 0 && <Tr><Td colSpan={3}>No sales yet.</Td></Tr>}
                     </tbody>
