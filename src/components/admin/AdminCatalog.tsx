@@ -1,5 +1,5 @@
 // ABOUTME: Platform default fee (applies to new applicants) and category management (create, rename, delete when unused).
-// ABOUTME: Deleting a category that still has products is refused by the server and shown inline.
+// ABOUTME: Delete is disabled for a category that still has products; the server refuses it as well.
 import { useState, type FormEvent } from 'react';
 import { formatBps } from '../../lib/format.ts';
 import { percentToBps, useAdminCategories, useAdminSettings, useCreateCategory, useDeleteCategory, useRenameCategory, useSetDefaultFee } from '../../lib/admin.ts';
@@ -43,13 +43,14 @@ function CategoryRow({ c }: { c: AdminCategory }) {
   return (
     <Tr>
       <Td>
-        <Input label={`Name of ${c.name}`} value={name} onChange={(e) => setName(e.target.value)} error={error || undefined} />
+        <Input label={`Name of ${c.name}`} hideLabel value={name} onChange={(e) => setName(e.target.value)} error={error || undefined} />
       </Td>
       <Td numeric><span className="font-numeric">{c.productCount}</span></Td>
       <Td>
         <div className="flex gap-2">
           <Button size="sm" variant="secondary" disabled={name.trim() === c.name || !name.trim()} loading={rename.isPending} onClick={() => rename.mutate({ id: c.id, name: name.trim() }, { onSuccess: () => toast.success('Category renamed'), onError: (e) => setError(e.message) })}>Rename</Button>
-          <Button size="sm" variant="danger" loading={del.isPending} onClick={() => del.mutate(c.id, { onSuccess: () => toast.success('Category deleted', c.name), onError: (e) => setError(e.message) })}>Delete<span className="sr-only"> {c.name}</span></Button>
+          <Button size="sm" variant="danger" loading={del.isPending} disabled={c.productCount > 0} aria-describedby={c.productCount > 0 ? `in-use-${c.id}` : undefined} onClick={() => del.mutate(c.id, { onSuccess: () => toast.success('Category deleted', c.name), onError: (e) => setError(e.message) })}>Delete<span className="sr-only"> {c.name}</span></Button>
+          {c.productCount > 0 && <span id={`in-use-${c.id}`} className="self-center whitespace-nowrap text-xs text-bone/70">In use</span>}
         </div>
       </Td>
     </Tr>

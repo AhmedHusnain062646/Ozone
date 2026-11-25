@@ -55,3 +55,35 @@ test('a very long console title wraps without sideways scroll on a phone', async
   });
   expect(overflow).toBeLessThanOrEqual(0);
 });
+
+test('suspending asks first, and cancelling sends nothing', async ({ page }) => {
+  await signIn(page, ACCOUNTS.admin, '/admin?tab=sellers');
+  const patches: string[] = [];
+  page.on('request', (r) => { if (r.method() === 'PATCH') patches.push(r.url()); });
+  const row = page.getByRole('row', { name: /Maison Silt/ });
+  await row.getByRole('button', { name: /^Suspend/ }).click();
+  const dialog = page.getByRole('dialog', { name: 'Suspend Maison Silt?' });
+  await dialog.getByRole('button', { name: 'Cancel' }).click();
+  await expect(dialog).toHaveCount(0);
+  await expect(row).toContainText('Active');
+  expect(patches).toEqual([]);
+});
+
+test('confirming a suspension sends it', async ({ page }) => {
+  // The write is intercepted so the shared seed data keeps every atelier active.
+  await page.route('**/api/admin/sellers/*', (route) => route.fulfill({ status: 409, json: { error: { code: 'CONFLICT', message: 'intercepted' } } }));
+  await signIn(page, ACCOUNTS.admin, '/admin?tab=sellers');
+  await page.getByRole('row', { name: /Maison Silt/ }).getByRole('button', { name: /^Suspend/ }).click();
+  const sent = page.waitForRequest((r) => r.method() === 'PATCH');
+  await page.getByRole('dialog').getByRole('button', { name: 'Suspend atelier' }).click();
+  expect((await sent).postDataJSON()).toEqual({ status: 'suspended' });
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+});
+
+test('a category in use cannot be deleted, and row inputs have no visible label', async ({ page }) => {
+  await signIn(page, ACCOUNTS.admin, '/admin?tab=catalog');
+  await expect(page.getByRole('button', { name: 'Delete Interiors' })).toBeDisabled();
+  await expect(page.getByRole('row', { name: /Interiors/ })).toContainText('In use');
+  const label = page.getByText('Name of Interiors', { exact: true });
+  expect((await label.boundingBox())!.width).toBeLessThanOrEqual(1);
+});
