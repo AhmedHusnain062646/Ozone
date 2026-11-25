@@ -1,38 +1,43 @@
 // ABOUTME: Route table (react-router data mode). Modal screens are child routes of "/" so they are deep-linkable.
-// ABOUTME: Role-gated areas wrap their element in <RequireRole>; later milestones add their routes here.
+// ABOUTME: Screens most visitors never open are code-split with `lazy`; role-gated areas wrap their element in <RequireRole>.
+import type { ComponentType } from 'react';
 import { createBrowserRouter } from 'react-router';
 import { AuthenticationModal } from './components/auth/AuthenticationModal.tsx';
-import { CheckoutModal } from './components/buyer/CheckoutModal.tsx';
-import { OrderDetailView, OrderTrackingView } from './components/buyer/OrderTrackingView.tsx';
 import { CartDrawer } from './components/buyer/CartDrawer.tsx';
 import { ProductDetailModal } from './components/buyer/ProductDetailModal.tsx';
-import { AdminDashboard } from './components/admin/AdminDashboard.tsx';
-import { SellerDashboard } from './components/seller/SellerDashboard.tsx';
-import { WishlistView } from './components/buyer/WishlistView.tsx';
-import { RequireRole } from './lib/auth.tsx';
 import { Storefront } from './components/buyer/Storefront.tsx';
 import { AppLayout } from './components/common/AppLayout.tsx';
-import { Forbidden, NotFound } from './components/common/StatusPages.tsx';
+import { Forbidden, NotFound, PageError, PageLoading } from './components/common/StatusPages.tsx';
+import { RequireRole } from './lib/auth.tsx';
+import type { UserRole } from './lib/types.ts';
+
+/** Downloads a signed-in screen only when its route is first visited. */
+const guarded = (load: () => Promise<ComponentType>, roles?: UserRole[]) => async () => {
+  const Screen = await load();
+  return { element: <RequireRole roles={roles}><Screen /></RequireRole> };
+};
 
 export const router = createBrowserRouter([
   {
     path: '/',
     Component: AppLayout,
+    HydrateFallback: PageLoading,
+    ErrorBoundary: PageError,
     children: [
       {
         path: '/',
         Component: Storefront, children: [
           { path: 'sign-in', Component: AuthenticationModal },
           { path: 'products/:slug', Component: ProductDetailModal },
-          { path: 'checkout', element: <RequireRole><CheckoutModal /></RequireRole> },
+          { path: 'checkout', lazy: guarded(async () => (await import('./components/buyer/CheckoutModal.tsx')).CheckoutModal) },
           { path: 'cart', element: <RequireRole><CartDrawer /></RequireRole> },
         ],
       },
-      { path: 'orders', element: <RequireRole><OrderTrackingView /></RequireRole> },
-      { path: 'orders/:code', element: <RequireRole><OrderDetailView /></RequireRole> },
-      { path: 'admin', element: <RequireRole roles={['admin']}><AdminDashboard /></RequireRole> },
-      { path: 'seller', element: <RequireRole roles={['seller']}><SellerDashboard /></RequireRole> },
-      { path: 'wishlist', element: <RequireRole><WishlistView /></RequireRole> },
+      { path: 'orders', lazy: guarded(async () => (await import('./components/buyer/OrderTrackingView.tsx')).OrderTrackingView) },
+      { path: 'orders/:code', lazy: guarded(async () => (await import('./components/buyer/OrderTrackingView.tsx')).OrderDetailView) },
+      { path: 'admin', lazy: guarded(async () => (await import('./components/admin/AdminDashboard.tsx')).AdminDashboard, ['admin']) },
+      { path: 'seller', lazy: guarded(async () => (await import('./components/seller/SellerDashboard.tsx')).SellerDashboard, ['seller']) },
+      { path: 'wishlist', lazy: guarded(async () => (await import('./components/buyer/WishlistView.tsx')).WishlistView) },
       { path: 'forbidden', Component: Forbidden },
       { path: '*', Component: NotFound },
     ],
